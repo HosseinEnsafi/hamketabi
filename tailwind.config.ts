@@ -9,10 +9,6 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["IRANSansX", "Arial"],
-        sans_fa_num: ["IRANSansX", "Arial"],
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
