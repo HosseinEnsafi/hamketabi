@@ -9,7 +9,7 @@ const FeedsPage = async () => {
       <form
         action={async () => {
           "use server"
-          await signOut({ redirectTo: "/auth/login", redirect: true })
+          await signOut({ redirectTo: "/auth/login" })
         }}
       >
         <Button>خروج</Button>

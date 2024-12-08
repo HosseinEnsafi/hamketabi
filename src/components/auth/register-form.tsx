@@ -1,4 +1,5 @@
 "use client"
+
 import {
   FormField,
   Form,
@@ -15,17 +16,22 @@ import { RegisterSchema } from "@/lib/schemas"
 import z from "zod"
 import { Button } from "../ui/button"
 import { useState, useTransition } from "react"
-import { register } from "@/actions/auth"
+import { register, newVerification } from "@/actions/auth"
 import { FormError } from "../form-error"
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
 import { FormSuccess } from "../form-success"
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import { REGEXP_ONLY_DIGITS } from "input-otp"
 
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | undefined>()
-  const [success, setSuccess] = useState<string | undefined>()
-  const form = useForm({
+  const [registerError, setRegisterError] = useState<string | undefined>()
+  const [registerSuccess, setRegisterSuccess] = useState<string | undefined>()
+  const [verifyError, setVerifyError] = useState<string | undefined>()
+  const [verifySuccess, setVerifySuccess] = useState<string | undefined>()
+  const [step, setStep] = useState<"register" | "verify">("register")
+  const [otp, setOtp] = useState("")
+
+  const regForm = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       phoneNumber: "",
@@ -34,89 +40,128 @@ const LoginForm = () => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof RegisterSchema>) {
-    setError("")
-    setSuccess("")
+  const handleSendOTP = (values: z.infer<typeof RegisterSchema>) => {
+    setRegisterError("")
+    setRegisterSuccess("")
     startTransition(() => {
-      register(values).then((data) => {
-        if ("error" in data) setError(data.error)
-        if ("success" in data) setSuccess(data.success)
+      newVerification(values.phoneNumber, values.name).then((data) => {
+        if ("success" in data) {
+          setRegisterSuccess(data.success)
+          setStep("verify")
+        }
+        if ("error" in data) setRegisterError(data.error)
+      })
+    })
+  }
+
+  const handleVerifyOTP = () => {
+    const regData = regForm.getValues()
+    setVerifyError("")
+    setVerifySuccess("")
+    startTransition(() => {
+      register(regData, otp).then((data) => {
+        if ("success" in data) {
+          setVerifySuccess("ثبت‌نام با موفقیت انجام شد!")
+        }
+        if ("error" in data) setVerifyError(data.error)
       })
     })
   }
 
   return (
-    <CardWrapper
-      backButtonHref="/auth/login"
-      backButtonLabel="از قبل ثبت نام کرده ام"
-      headerLabel="ثبت نام"
-    >
-      <Form {...form}>
-        <form className="flex flex-col space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>شماره تلفن</FormLabel>
-                <FormControl>
-                  <Input placeholder="شماره تلفن خود را وارد کنید" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>نام کاربری</FormLabel>
-                <FormControl>
-                  <Input dir="ltr" type="name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>رمز عبور</FormLabel>
-                <FormControl>
-                  <Input dir="ltr" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormError message={error} />
-          <FormSuccess message={success} />
-          <Button disabled={isPending}>ثبت نام</Button>
-        </form>
-      </Form>
-
-      {success && (
-        <InputOTP className="" maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS}>
-          <InputOTPGroup
-            className="mt-4 flex w-full items-center justify-center"
-            dir="ltr"
-            style={{ direction: "ltr" }}
-          >
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
+    <>
+      {step === "register" && (
+        <CardWrapper
+          backButtonHref="/auth/login"
+          backButtonLabel="از قبل ثبت نام کرده ام"
+          headerLabel="ثبت نام"
+        >
+          <Form {...regForm}>
+            <form
+              className="flex flex-col space-y-4"
+              onSubmit={regForm.handleSubmit(handleSendOTP)}
+            >
+              <FormField
+                control={regForm.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>شماره تلفن</FormLabel>
+                    <FormControl>
+                      <Input
+                        style={{ direction: "ltr" }}
+                        placeholder="شماره تلفن خود را وارد کنید"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={regForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>نام کاربری</FormLabel>
+                    <FormControl>
+                      <Input dir="ltr" type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={regForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>رمز عبور</FormLabel>
+                    <FormControl>
+                      <Input dir="ltr" type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormError message={registerError} />
+              <FormSuccess message={registerSuccess} />
+              <Button disabled={isPending}>ارسال کد</Button>
+            </form>
+          </Form>
+        </CardWrapper>
       )}
-    </CardWrapper>
+
+      {step === "verify" && (
+        <CardWrapper
+          headerLabel="تایید کد"
+          onPrevClick={() => setStep("register")}
+          backButtonLabel="بازگشت"
+        >
+          <div className="space-y-6">
+            <InputOTP
+              maxLength={6}
+              disabled={isPending}
+              pattern={REGEXP_ONLY_DIGITS}
+              onChange={(value) => setOtp(value)}
+              onComplete={handleVerifyOTP}
+            >
+              <InputOTPGroup
+                className="mt-4 flex w-full items-center justify-center"
+                dir="ltr"
+              >
+                {[...Array(6)].map((_, index) => (
+                  <InputOTPSlot key={index} index={index} />
+                ))}
+              </InputOTPGroup>
+            </InputOTP>
+            <FormError message={verifyError} />
+            <FormSuccess message={verifySuccess} />
+          </div>
+        </CardWrapper>
+      )}
+    </>
   )
 }
+
 export default LoginForm

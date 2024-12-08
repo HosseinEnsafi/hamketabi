@@ -1,6 +1,7 @@
 import z, { ZodSchema } from "zod"
 const phoneRegex = /^09[0-9]{9}$/
-const isEnglishAlphabet = /^[a-zA-Z]+$/
+const isEnglishAlphabetRegex = /^[a-zA-Z]+$/
+const onlyNumberRegex = /^[0-9]*$/
 
 const requiredMessage = (field: string) => `${field} نمیتواند خالی باشد`
 const emptyMessage = (field: string) => `${field} باید مقدار داشته باشد`
@@ -29,7 +30,7 @@ export const RegisterSchema = z.object({
     .string({ message: requiredMessage("نام کاربری") })
     .trim()
     .min(1, { message: emptyMessage("نام کاربری") })
-    .regex(isEnglishAlphabet, { message: "فقط از حروف انگلیسی استفاده شود" }),
+    .regex(isEnglishAlphabetRegex, { message: "فقط از حروف انگلیسی استفاده شود" }),
 })
 
 export const LoginSchema = RegisterSchema.pick({

@@ -1,30 +1,9 @@
-import { getVerificationTokenByPhoneNumber } from "@/data/verification-token"
-import { db } from "./db"
 import { generateRandomInt } from "./utils"
 
 export const generateVerificationToken = async (phoneNumber: string) => {
   const expires = new Date(Date.now() + 2 * 60 * 1000)
-
-  const existingToken = await getVerificationTokenByPhoneNumber(phoneNumber)
   const token = String(generateRandomInt(121122, 988899))
-
-  if (existingToken) {
-    await db.verificationToken.delete({
-      where: {
-        id: existingToken.id,
-      },
-    })
-  }
-
-  const verificationToken = await db.verificationToken.create({
-    data: {
-      phoneNumber: phoneNumber,
-      expires,
-      token,
-    },
-  })
-
-  return verificationToken
+  return { token, phoneNumber, expires }
 }
 
 export const sendPhoneNumberVerification = async (phoneNumber: string, token: string) => {

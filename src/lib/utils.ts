@@ -13,7 +13,7 @@ export function generateRandomInt(min: number, max: number) {
 
 export const renderError = (error: unknown): { error: string } => {
   const isDevelopment = process.env.APP_ENV !== "production"
-  console.log(error)
+
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     const userMessage =
       "خطایی در پردازش درخواست شما رخ داده است. لطفاً داده‌های خود را بررسی کرده و دوباره تلاش کنید."

@@ -39,7 +39,7 @@ const LoginForm = () => {
       login(values).then((data) => {
         if (!data) return
         if ("error" in data) setError(data.error)
-        // if ("success" in data) setSuccess(data.success)
+        if ("success" in data) setSuccess(data.success)
       })
     })
   }
@@ -59,7 +59,11 @@ const LoginForm = () => {
               <FormItem>
                 <FormLabel>شماره تلفن</FormLabel>
                 <FormControl>
-                  <Input placeholder="شماره تلفن خود را وارد کنید" {...field} />
+                  <Input
+                    style={{ direction: "ltr" }}
+                    placeholder="شماره تلفن خود را وارد کنید"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

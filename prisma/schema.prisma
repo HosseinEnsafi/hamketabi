@@ -23,6 +23,8 @@ model User {
   role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  @@unique([name, phoneNumber])
 }
 
 model Account {
@@ -48,7 +50,7 @@ model Account {
 
 model VerificationToken {
   id          String   @id @default(uuid())
-  phoneNumber String
+  phoneNumber String   @unique
   token       String
   expires     DateTime
 

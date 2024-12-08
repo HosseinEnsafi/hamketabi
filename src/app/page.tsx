@@ -11,7 +11,7 @@ export default async function Home() {
   if (!!session) redirect("/feeds")
 
   return (
-    <div className="container mx-auto max-w-6xl">
+    <div className="container mx-auto max-w-6xl px-2 sm:px-0">
       <header className="grid grid-cols-2 grid-rows-2 items-center gap-x-36 gap-y-4 py-4 md:grid-cols-[auto,1fr,auto] md:grid-rows-1">
         <h1 className="">لوگو اصلی</h1>
         <div className="relative col-span-2 col-start-1 flex w-full items-center md:col-span-1">
@@ -29,7 +29,7 @@ export default async function Home() {
             <Link href={"/auth/login"}>ورود</Link>
           </Button>
           <Button asChild variant={"secondary"}>
-            <Link href={"/auth/login"}>ثبت نام</Link>
+            <Link href={"/auth/register"}>ثبت نام</Link>
           </Button>
         </nav>
       </header>
