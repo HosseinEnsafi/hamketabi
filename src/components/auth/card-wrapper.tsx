@@ -2,22 +2,20 @@
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "../ui/button"
-import Link from "next/link"
 import { MoveRightIcon } from "lucide-react"
+import { ReactNode } from "react"
 
 interface CardWrapperProps {
-  children: React.ReactNode
+  children: ReactNode
   headerLabel: string
-  backButtonLabel?: string
-  backButtonHref?: string
+  cardFooter?: ReactNode
   onPrevClick?: () => void
 }
 
 const CardWrapper = ({
   children,
   headerLabel,
-  backButtonHref,
-  backButtonLabel,
+  cardFooter,
   onPrevClick,
 }: CardWrapperProps) => {
   return (
@@ -37,13 +35,7 @@ const CardWrapper = ({
 
       <CardContent>{children}</CardContent>
 
-      {backButtonHref && (
-        <CardFooter>
-          <Button variant={"link"} asChild>
-            <Link href={backButtonHref}>{backButtonLabel}</Link>
-          </Button>
-        </CardFooter>
-      )}
+      {cardFooter && <CardFooter>{cardFooter}</CardFooter>}
     </Card>
   )
 }

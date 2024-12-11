@@ -21,6 +21,7 @@ import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
+import Link from "next/link"
 
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition()
@@ -72,8 +73,11 @@ const LoginForm = () => {
     <>
       {step === "register" && (
         <CardWrapper
-          backButtonHref="/auth/login"
-          backButtonLabel="از قبل ثبت نام کرده ام"
+          cardFooter={
+            <Button variant={"link"} asChild>
+              <Link href={"/auth/login"}>از قبل ثبت نام کرده ام</Link>
+            </Button>
+          }
           headerLabel="ثبت نام"
         >
           <Form {...regForm}>
@@ -88,11 +92,7 @@ const LoginForm = () => {
                   <FormItem>
                     <FormLabel>شماره تلفن</FormLabel>
                     <FormControl>
-                      <Input
-                        style={{ direction: "ltr" }}
-                        placeholder="شماره تلفن خود را وارد کنید"
-                        {...field}
-                      />
+                      <Input style={{ direction: "ltr" }} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -133,11 +133,7 @@ const LoginForm = () => {
       )}
 
       {step === "verify" && (
-        <CardWrapper
-          headerLabel="تایید کد"
-          onPrevClick={() => setStep("register")}
-          backButtonLabel="بازگشت"
-        >
+        <CardWrapper headerLabel="تایید کد" onPrevClick={() => setStep("register")}>
           <div className="space-y-6">
             <InputOTP
               maxLength={6}

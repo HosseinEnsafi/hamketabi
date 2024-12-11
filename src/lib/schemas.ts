@@ -37,3 +37,11 @@ export const LoginSchema = RegisterSchema.pick({
   phoneNumber: true,
   password: true,
 })
+
+export const VerifyResetSchema = RegisterSchema.pick({
+  password: true,
+  phoneNumber: true,
+})
+
+export const PhoneNumberSchema = RegisterSchema.pick({ phoneNumber: true })
+export const PasswordSchema = RegisterSchema.pick({ password: true })

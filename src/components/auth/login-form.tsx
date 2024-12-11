@@ -18,11 +18,13 @@ import { useState, useTransition } from "react"
 import { login } from "@/actions/auth"
 import { FormSuccess } from "../form-success"
 import { FormError } from "../form-error"
+import Link from "next/link"
 
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition()
   const [success, setSuccess] = useState<string | undefined>()
   const [error, setError] = useState<string | undefined>()
+
   const form = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -46,9 +48,17 @@ const LoginForm = () => {
 
   return (
     <CardWrapper
-      backButtonHref="/auth/register"
-      backButtonLabel="هنوز حساب کاربری ندارید؟ "
       headerLabel="ورود به حساب کاربری"
+      cardFooter={
+        <div className="flex w-full items-center justify-between">
+          <Button variant={"link"} asChild>
+            <Link href={"/auth/register"}>هنوز حساب کاربری ندارید</Link>
+          </Button>
+          <Button variant={"link"} asChild>
+            <Link href={"/auth/reset"}>رمز عبور را فراموش کردم</Link>
+          </Button>
+        </div>
+      }
     >
       <Form {...form}>
         <form className="flex flex-col space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -59,11 +69,7 @@ const LoginForm = () => {
               <FormItem>
                 <FormLabel>شماره تلفن</FormLabel>
                 <FormControl>
-                  <Input
-                    style={{ direction: "ltr" }}
-                    placeholder="شماره تلفن خود را وارد کنید"
-                    {...field}
-                  />
+                  <Input style={{ direction: "ltr" }} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
