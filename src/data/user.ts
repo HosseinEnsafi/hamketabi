@@ -9,6 +9,20 @@ export const getUserByEmail = async (email: string) => {
     return null
   }
 }
+
+export const getUserByIdentifier = async (identifier: string) => {
+  try {
+    const user = await db.user.findFirst({
+      where: {
+        OR: [{ name: identifier }, { phoneNumber: identifier }],
+      },
+    })
+    return user
+  } catch {
+    return null
+  }
+}
+
 export const getUserByPhoneNumber = async (phoneNumber: string) => {
   try {
     const user = await db.user.findUnique({ where: { phoneNumber } })

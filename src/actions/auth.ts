@@ -10,17 +10,14 @@ import {
 } from "@/lib/schemas"
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
 import { signIn } from "@/auth"
-import { getUserByName, getUserByPhoneNumber } from "@/data/user"
+import { getUserByName, getUserByIdentifier, getUserByPhoneNumber } from "@/data/user"
 import { comparePassword, hashPassword, renderError } from "@/lib/utils"
-import { AuthError } from "next-auth"
 import { generateVerificationToken, sendPhoneNumberVerification } from "@/lib/tokens"
 import { getVerificationToken } from "@/data/verification-token"
-import { isRedirectError } from "@/lib/redirect-error"
 
 export const register = async (values: z.infer<typeof RegisterSchema>, token: string) => {
   try {
     const { name, password, phoneNumber } = validateWithZodSchema(RegisterSchema, values)
-
     const hashedPassword = hashPassword(password)
 
     const [existingToken, existingUser] = await Promise.all([
@@ -34,14 +31,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>, token: st
     const hasExpired = new Date(existingToken.expires) < new Date()
 
     if (hasExpired) {
-      await db.verificationToken.delete({
-        where: {
-          phoneNumber_token: {
-            token,
-            phoneNumber,
-          },
-        },
-      })
+      await deleteUniqueVerificationToken(phoneNumber, token)
       return { error: "کد تایید منقضی شده است" }
     }
 
@@ -55,24 +45,13 @@ export const register = async (values: z.infer<typeof RegisterSchema>, token: st
     })
 
     await signIn("credentials", {
-      phoneNumber,
+      identifier: phoneNumber,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     })
 
     return { success: "کاربر با موفقیت ثبت نام و وارد شد" }
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
-        default:
-          return { error: "خطای نامشخصی هنگام ورود رخ داد" }
-      }
-    }
-
-    if (isRedirectError(error)) throw error
-
     return renderError(error)
   }
 }
@@ -91,7 +70,7 @@ export const newVerification = async (phoneNumber: string, name: string) => {
       verificationToken.token,
     )
 
-    await deleteAllVerificationTokens({ phoneNumber })
+    await deleteAllVerificationTokens("0023")
 
     await db.verificationToken.create({
       data: {
@@ -109,9 +88,9 @@ export const newVerification = async (phoneNumber: string, name: string) => {
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   try {
-    const { phoneNumber, password } = validateWithZodSchema(LoginSchema, values)
+    const { identifier, password } = validateWithZodSchema(LoginSchema, values)
 
-    const existingUser = await getUserByPhoneNumber(phoneNumber)
+    const existingUser = await getUserByIdentifier(identifier)
 
     if (!existingUser || !existingUser?.password) {
       return { error: "کاربری با این مشخصات یافت نشد" }
@@ -124,31 +103,20 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       return { error: "لطفاً شماره تلفن خود را تأیید کنید" }
 
     await signIn("credentials", {
-      phoneNumber,
+      identifier,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     })
 
     return { success: "ورود موفقیت‌آمیز بود" }
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
-        default:
-          return { error: "خطای نامشخصی هنگام ورود رخ داد" }
-      }
-    }
-
-    if (isRedirectError(error)) throw error
-
     return renderError(error)
   }
 }
 
-export const requestReset = async (values: z.infer<typeof PhoneNumberSchema>) => {
+export const requestReset = async (phoneNumber: z.infer<typeof PhoneNumberSchema>) => {
   try {
-    const { phoneNumber } = validateWithZodSchema(PhoneNumberSchema, values)
+    validateWithZodSchema(PhoneNumberSchema, phoneNumber)
     const existingUser = await getUserByPhoneNumber(phoneNumber)
     if (!existingUser) return { error: "کاربری با این شماره تلفن یافت نشد" }
 
@@ -158,7 +126,7 @@ export const requestReset = async (values: z.infer<typeof PhoneNumberSchema>) =>
       verificationToken.token,
     )
 
-    await deleteAllVerificationTokens({ phoneNumber })
+    await deleteAllVerificationTokens(phoneNumber)
 
     await db.verificationToken.create({
       data: {
@@ -194,15 +162,7 @@ export const verifyReset = async (
 
     const hasExpired = new Date(existingToken.expires) < new Date()
     if (hasExpired) {
-      await db.verificationToken.delete({
-        where: {
-          phoneNumber_token: {
-            phoneNumber,
-            token,
-          },
-        },
-      })
-
+      await deleteUniqueVerificationToken(phoneNumber, token)
       return { error: "کد تایید منقضی شده است" }
     }
 
@@ -222,34 +182,35 @@ export const verifyReset = async (
     })
 
     await signIn("credentials", {
-      phoneNumber,
+      identifier: phoneNumber,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
     })
 
     return { success: "رمز عبور با موفقیت تغییر کرد" }
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CredentialsSignin":
-          return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
-        default:
-          return { error: "خطای نامشخصی هنگام ورود رخ داد" }
-      }
-    }
-
-    if (isRedirectError(error)) throw error
-
     return renderError(error)
   }
 }
 
-export const deleteAllVerificationTokens = async ({
-  phoneNumber,
-}: z.infer<typeof PhoneNumberSchema>) => {
+export const deleteAllVerificationTokens = async (phoneNumber: string) => {
   await db.verificationToken.deleteMany({
     where: {
       phoneNumber,
+    },
+  })
+}
+
+export const deleteUniqueVerificationToken = async (
+  phoneNumber: string,
+  token: string,
+) => {
+  await db.verificationToken.delete({
+    where: {
+      phoneNumber_token: {
+        token,
+        phoneNumber,
+      },
     },
   })
 }

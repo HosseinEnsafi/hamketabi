@@ -133,7 +133,7 @@ const LoginForm = () => {
       )}
 
       {step === "verify" && (
-        <CardWrapper headerLabel="تایید کد" onPrevClick={() => setStep("register")}>
+        <CardWrapper headerLabel="🛡️ تایید کد" onPrevClick={() => setStep("register")}>
           <div className="space-y-6">
             <InputOTP
               maxLength={6}

@@ -13,12 +13,12 @@ export const {
 } = NextAuth({
   adapter: PrismaAdapter(db),
   callbacks: {
-    async signIn({ user }) {
+    /* async signIn({ user }) {
       const existingUser = user.id ? await getUserById(user.id) : null
       console.log(existingUser)
 
       return true
-    },
+    }, */
 
     async session({ token, session }) {
       if (!session.user) return session

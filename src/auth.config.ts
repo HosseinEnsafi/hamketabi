@@ -1,6 +1,6 @@
 import { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { getUserByPhoneNumber } from "@/data/user"
+import { getUserByIdentifier } from "@/data/user"
 import { LoginSchema } from "@/lib/schemas"
 import { comparePassword } from "@/lib/utils"
 
@@ -13,8 +13,8 @@ export default {
 
         if (validatedFields.error) return null
 
-        const { password, phoneNumber } = validatedFields.data
-        const user = await getUserByPhoneNumber(phoneNumber)
+        const { password, identifier } = validatedFields.data
+        const user = await getUserByIdentifier(identifier)
 
         if (!user || !user.password) return null
 

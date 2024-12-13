@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import crypto from "crypto"
 import { Prisma } from "@prisma/client"
+import { AuthError } from "next-auth"
+import { isRedirectError } from "next/dist/client/components/redirect"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -13,6 +15,15 @@ export function generateRandomInt(min: number, max: number) {
 
 export const renderError = (error: unknown): { error: string } => {
   const isDevelopment = process.env.APP_ENV !== "production"
+
+  if (isRedirectError(error)) throw error
+
+  if (error instanceof AuthError) {
+    if (error.type === "CredentialsSignin")
+      return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
+
+    return { error: "خطای نامشخصی هنگام ورود رخ داد" }
+  }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     const userMessage =

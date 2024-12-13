@@ -12,7 +12,9 @@ const FeedsPage = async () => {
           await signOut({ redirectTo: "/auth/login" })
         }}
       >
-        <Button>خروج</Button>
+        <Button type="submit" variant={"default"} className="mr-2">
+          خروج
+        </Button>
       </form>
     </main>
   )

@@ -28,7 +28,7 @@ const LoginForm = () => {
   const form = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      phoneNumber: "",
+      identifier: "",
       password: "",
     },
   })
@@ -64,17 +64,17 @@ const LoginForm = () => {
         <form className="flex flex-col space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="phoneNumber"
+            name="identifier"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>شماره تلفن</FormLabel>
+                <FormLabel>شماره تلفن یا نام کاربری</FormLabel>
                 <FormControl>
                   <Input style={{ direction: "ltr" }} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />{" "}
+          />
           <FormField
             control={form.control}
             name="password"

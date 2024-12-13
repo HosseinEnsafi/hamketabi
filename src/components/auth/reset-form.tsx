@@ -31,9 +31,13 @@ const ResetForm = () => {
   const [step, setStep] = useState<"request" | "verify">("request")
   const [otp, setOtp] = useState("")
 
+  const requestVerifySchema = z.object({
+    phoneNumber: PhoneNumberSchema,
+  })
+
   // Phone number form
   const phoneForm = useForm({
-    resolver: zodResolver(PhoneNumberSchema),
+    resolver: zodResolver(requestVerifySchema),
     defaultValues: {
       phoneNumber: "",
     },
@@ -41,17 +45,18 @@ const ResetForm = () => {
 
   // Password form
   const passwordForm = useForm({
-    resolver: zodResolver(PasswordSchema),
+    resolver: zodResolver(z.object({ password: PasswordSchema })),
     defaultValues: {
       password: "",
     },
   })
 
-  const handleSendOTP = (values: z.infer<typeof PhoneNumberSchema>) => {
+  const handleSendOTP = (values: z.infer<typeof requestVerifySchema>) => {
     setRequestError("")
     setRequestSuccess("")
     startTransition(() => {
-      requestReset(values).then((data) => {
+      const { phoneNumber } = values
+      requestReset(phoneNumber).then((data) => {
         if ("success" in data) {
           setRequestSuccess(data.success)
           setStep("verify")
@@ -63,6 +68,7 @@ const ResetForm = () => {
 
   const handleVerifyOTP = (values: { password: string }) => {
     const { phoneNumber } = phoneForm.getValues()
+    console.log("Verifying OTP:", values, otp)
     setVerifyError("")
     setVerifySuccess("")
     startTransition(() => {
