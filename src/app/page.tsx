@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
+import Logo from "@/components/Logo"
+import SearchBook from "@/components/SearchBook"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { SearchIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
@@ -11,19 +11,10 @@ export default async function Home() {
   if (!!session) redirect("/feeds")
 
   return (
-    <div className="container mx-auto max-w-6xl px-2 sm:px-0">
+    <div className="container mx-auto max-w-6xl px-2 lg:px-0">
       <header className="grid grid-cols-2 grid-rows-2 items-center gap-x-36 gap-y-4 py-4 md:grid-cols-[auto,1fr,auto] md:grid-rows-1">
-        <h1 className="">لوگو اصلی</h1>
-        <div className="relative col-span-2 col-start-1 flex w-full items-center md:col-span-1">
-          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
-            <SearchIcon className="text-gray-500" size={14} />
-          </div>
-          <Input
-            type="search"
-            className="w-full max-w-2xl rounded-lg border bg-gray-100 p-2.5 ps-10 text-sm"
-            placeholder="از بین هزاران کتاب انتخاب کنید"
-          />
-        </div>
+        <Logo />
+        <SearchBook className="col-span-2 col-start-1 md:col-span-1" />
         <nav className="col-start-2 row-start-1 flex gap-2 justify-self-end md:col-start-3">
           <Button asChild>
             <Link href={"/auth/login"}>ورود</Link>

@@ -14,7 +14,7 @@ export const getUserByIdentifier = async (identifier: string) => {
   try {
     const user = await db.user.findFirst({
       where: {
-        OR: [{ name: identifier }, { phoneNumber: identifier }],
+        OR: [{ name: identifier.toLocaleLowerCase() }, { phoneNumber: identifier }],
       },
     })
     return user
@@ -33,7 +33,7 @@ export const getUserByPhoneNumber = async (phoneNumber: string) => {
 }
 export const getUserByName = async (name: string) => {
   try {
-    const user = await db.user.findUnique({ where: { name } })
+    const user = await db.user.findUnique({ where: { name: name.toLocaleLowerCase() } })
     return user
   } catch {
     return null

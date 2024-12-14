@@ -11,7 +11,7 @@ export function ThemeProvider({
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
       <DirectionProvider dir="rtl">{children}</DirectionProvider>
     </ThemeProvider>
   )

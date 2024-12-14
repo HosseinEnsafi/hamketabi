@@ -9,7 +9,7 @@ import {
   VerifyResetSchema,
 } from "@/lib/schemas"
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
-import { signIn } from "@/auth"
+import { signIn, signOut } from "@/auth"
 import { getUserByName, getUserByIdentifier, getUserByPhoneNumber } from "@/data/user"
 import { comparePassword, hashPassword, renderError } from "@/lib/utils"
 import { generateVerificationToken, sendPhoneNumberVerification } from "@/lib/tokens"
@@ -39,7 +39,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>, token: st
       data: {
         phoneNumber,
         password: hashedPassword,
-        name,
+        name: name.toLocaleLowerCase(),
         phoneVerified: new Date(),
       },
     })
@@ -114,7 +114,15 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   }
 }
 
-export const requestReset = async (phoneNumber: z.infer<typeof PhoneNumberSchema>) => {
+export const logout = async () => {
+  try {
+    await signOut({ redirectTo: "/auth/login" })
+  } catch (error) {
+    return renderError(error)
+  }
+}
+
+export const requestReset = async (phoneNumber: string) => {
   try {
     validateWithZodSchema(PhoneNumberSchema, phoneNumber)
     const existingUser = await getUserByPhoneNumber(phoneNumber)
