@@ -13,21 +13,16 @@ const ProfileLink = ({ user }: { user: User }) => {
   return (
     <Button
       asChild
-      variant={"ghost"}
+      variant={isActive ? "secondary" : "ghost"}
       size={"lg"}
       className={cn(
-        "mt-1 w-full space-x-2 px-5 sm:px-4 md:justify-center lg:justify-start [&_svg]:size-5",
+        "w-full space-x-2 px-5 sm:px-4 md:justify-center lg:justify-start [&_svg]:size-5",
+        { "font-semibold text-primary": isActive },
       )}
     >
       <Link href={href} className={cn({ "text-primary": isActive })}>
         <UserCircle className="w-6" />
-        <p
-          className={cn("hidden lg:block", {
-            "font-extrabold": isActive,
-          })}
-        >
-          پروفایل
-        </p>
+        <p className={cn("hidden lg:block")}>پروفایل</p>
       </Link>
     </Button>
   )

@@ -17,7 +17,9 @@ export default async function Home() {
         <SearchBook className="col-span-2 col-start-1 md:col-span-1" />
         <nav className="col-start-2 row-start-1 flex gap-2 justify-self-end md:col-start-3">
           <Button asChild>
-            <Link href={"/auth/login"}>ورود</Link>
+            <Link className="" href={"/auth/login"}>
+              ورود
+            </Link>
           </Button>
           <Button asChild variant={"secondary"}>
             <Link href={"/auth/register"}>ثبت نام</Link>

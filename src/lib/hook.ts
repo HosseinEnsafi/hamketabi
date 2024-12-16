@@ -1,4 +1,4 @@
-import { RefObject, useEffect } from "react"
+import { RefObject, useCallback, useEffect, useState, useSyncExternalStore } from "react"
 
 export default function useOutsideClick<T extends HTMLElement>(
   ref: RefObject<T>,
@@ -19,4 +19,25 @@ export default function useOutsideClick<T extends HTMLElement>(
       document.removeEventListener("touchstart", handleClickOutside)
     }
   }, [ref])
+}
+
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    const matchMedia = window.matchMedia(query)
+
+    const updateMatches = () => setMatches(matchMedia.matches)
+
+    updateMatches()
+    matchMedia.addEventListener("change", updateMatches)
+
+    return () => {
+      matchMedia.removeEventListener("change", updateMatches)
+    }
+  }, [query])
+
+  return matches
 }

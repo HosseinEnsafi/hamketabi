@@ -40,7 +40,7 @@ const MoreOptions = () => {
           onClick={() => setOpen(!open)}
           variant={"ghost"}
           size={"lg"}
-          className="mt-auto w-full space-x-2 px-5 sm:px-4 md:justify-center lg:justify-start [&_svg]:size-5"
+          className="w-full space-x-2 px-5 sm:mt-auto sm:px-4 md:justify-center lg:justify-start [&_svg]:size-5"
         >
           <Menu />
           <div className="hidden lg:block">بیشتر</div>

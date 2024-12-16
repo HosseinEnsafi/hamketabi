@@ -7,24 +7,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
 model User {
-  id            String    @id @default(cuid())
-  name          String?   @unique
-  email         String?   @unique
-  phoneNumber   String?   @unique
+  id            String      @id @default(cuid())
+  name          String?     @unique
+  email         String?     @unique
+  phoneNumber   String?     @unique
+  image         String?     @unique
   password      String?
   phoneVerified DateTime?
   accounts      Account[]
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          UserRole    @default(USER)
+  posts         Post[]
+  likes         Like[]
+  comments      Comment[]
+  saved         SavedItem[]
+  quotes        Quote[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
 
-  @@unique([name, phoneNumber])
+model Post {
+  id       String      @id @default(cuid())
+  userId   String
+  user     User        @relation(fields: [userId], references: [id])
+  title    String
+  image    String      @unique
+  body     String
+  likes    Like[]      @relation()
+  comments Comment[]
+  savedBy  SavedItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Quote {
+  id        String      @id @default(cuid())
+  body      String
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId    String
+  book      Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  likes     Like[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  savedBy   SavedItem[]
+}
+
+model Book {
+  id        String   @id @default(cuid())
+  title     String
+  author    String
+  quotes    Quote[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id           String       @id @default(cuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likeableId   String
+  likeableType LikeableType
+  post         Post?        @relation(fields: [likeableId], references: [id], map: "Like_Post_likeableId_fkey")
+  comment      Comment?     @relation(fields: [likeableId], references: [id], map: "Like_Comment_likeableId_fkey")
+  quote        Quote?       @relation(fields: [likeableId], references: [id], map: "Like_Quote_likeableId_fkey")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([userId, likeableId, likeableType])
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes     Like[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SavedItem {
+  id           String       @id @default(cuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  saveableId   String
+  saveableType SaveableType
+  post         Post?        @relation(fields: [saveableId], references: [id], onDelete: Cascade, map: "Save_Post_saveableId_fkey")
+  quote        Quote?       @relation(fields: [saveableId], references: [id], onDelete: Cascade, map: "Save_Quote_saveableId_fkey")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, saveableId, saveableType])
 }
 
 model Account {
@@ -55,4 +136,22 @@ model VerificationToken {
   expires     DateTime
 
   @@unique([phoneNumber, token])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum LikeableType {
+  POST
+  COMMENT
+  QUOTE
+}
+
+enum SaveableType {
+  POST
+  COMMENT
+  QUOTE
+  BOOK
 }

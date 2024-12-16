@@ -70,7 +70,7 @@ export const newVerification = async (phoneNumber: string, name: string) => {
       verificationToken.token,
     )
 
-    await deleteAllVerificationTokens("0023")
+    await deleteAllVerificationTokens(phoneNumber)
 
     await db.verificationToken.create({
       data: {
