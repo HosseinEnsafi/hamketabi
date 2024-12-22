@@ -20,13 +20,8 @@ import Image from "next/image"
 import { Button } from "./ui/button"
 import { createPost } from "@/actions/post"
 import WordCount from "./WordCount"
-import {
-  MAX_BODY_POST,
-  MAX_TITLE_POST,
-  MIN_BODY_POST,
-  MIN_TITLE_POST,
-} from "@/lib/constants"
-
+import { MAX_BODY_POST, MAX_TITLE_POST, MIN_BODY_POST, MIN_TITLE_POST } from "@/lib/constants"
+import { toast } from "sonner"
 const CreatePostForm = () => {
   const form = useForm<z.infer<typeof CreatePostSchema>>({
     resolver: zodResolver(CreatePostSchema),
@@ -40,18 +35,14 @@ const CreatePostForm = () => {
   const image = form.watch("image")
 
   const onSubmit = async (data: z.infer<typeof CreatePostSchema>) => {
-    console.log(data)
     const res = await createPost(data)
-    console.log(res)
+    if ("error" in res) toast.error(res.error)
   }
 
   return (
     <div className="w-full max-w-3xl">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full flex-col gap-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex w-full flex-col gap-6">
           <FormField
             control={form.control}
             name="title"
@@ -101,9 +92,7 @@ const CreatePostForm = () => {
             name="image"
             render={() => (
               <FormItem>
-                <FormLabel className="mb-3 block w-full text-center text-xl">
-                  عکس پست
-                </FormLabel>
+                <FormLabel className="mb-3 block w-full text-center text-xl">عکس پست</FormLabel>
                 <FormControl>
                   <UploadImagePostBtn
                     onUploadCompleted={(url) => form.setValue("image", url)}

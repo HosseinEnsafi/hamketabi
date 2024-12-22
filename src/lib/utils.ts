@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 import crypto from "crypto"
 import { Prisma } from "@prisma/client"
 import { AuthError } from "next-auth"
-import { isRedirectError } from "next/dist/client/components/redirect"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

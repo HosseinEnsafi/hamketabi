@@ -1,17 +1,15 @@
 import z, { ZodSchema } from "zod"
 import { MAX_BODY_POST, MAX_TITLE_POST, MIN_BODY_POST, MIN_TITLE_POST } from "./constants"
+import Post from "@/components/Post"
 const phoneRegex = /^09[0-9]{9}$/
 const isEnglishAlphabetRegex = /^[a-zA-Z]+$/
 
 const requiredMessage = (field: string) => `${field} باید مقدار داشته باشد`
 const emptyMessage = (field: string) => `${field} نمیتواند خالی باشد`
-const minMessage = (field: string, length: number) =>
-  `${field} باید حداقل ${length} کاراکتر باشد`
-const maxMessage = (field: string, length: number) =>
-  `${field} باید حداکثر ${length} کاراکتر باشد`
+const minMessage = (field: string, length: number) => `${field} باید حداقل ${length} کاراکتر باشد`
+const maxMessage = (field: string, length: number) => `${field} باید حداکثر ${length} کاراکتر باشد`
 
-const lengthMessage = (field: string, length: number) =>
-  `${field} باید ${length} کاراکتر باشد`
+const lengthMessage = (field: string, length: number) => `${field} باید ${length} کاراکتر باشد`
 
 export function validateWithZodSchema<T>(schema: ZodSchema<T>, data: unknown): T {
   const result = schema.safeParse(data)
@@ -27,10 +25,7 @@ export const UserSchema = z.object({
   phoneNumber: z
     .string({ message: requiredMessage("شماره تلفن") })
     .regex(phoneRegex, { message: "فرمت شماره موبایل درست نیست" }),
-  password: z
-    .string()
-    .trim()
-    .min(8, { message: "رمز عبور نمیتواند کمتر از 8 کاراکتر باشد" }),
+  password: z.string().trim().min(8, { message: "رمز عبور نمیتواند کمتر از 8 کاراکتر باشد" }),
   name: z
     .string({ message: requiredMessage("نام کاربری") })
     .trim()
@@ -67,14 +62,13 @@ export const PasswordSchema = UserSchema.shape.password
 export const PostSchema = z.object({
   id: z
     .string({ message: requiredMessage("آیدی") })
-    .cuid({ message: "فرمت آیدی معتبر نیست" }),
+    .trim()
+    .min(1, { message: emptyMessage("آیدی") }),
   title: z
     .string({ message: requiredMessage("عنوان") })
     .min(MIN_TITLE_POST, { message: minMessage("عنوان", MIN_TITLE_POST) })
     .max(MAX_TITLE_POST, { message: maxMessage("عنوان", MAX_TITLE_POST) }),
-  image: z
-    .string({ message: requiredMessage("آدرس عکس") })
-    .url({ message: "فرمت آدرس عکس صحیح نیست" }),
+  image: z.string({ message: requiredMessage("آدرس عکس") }).url({ message: "فرمت آدرس عکس صحیح نیست" }),
   body: z
     .string({ message: requiredMessage("متن") })
     .trim()
@@ -85,3 +79,16 @@ export const PostSchema = z.object({
 
 export const CreatePostSchema = PostSchema.omit({ id: true })
 export const DeletePostSchema = PostSchema.pick({ id: true })
+
+export const LikeSchema = z.object({
+  id: PostSchema.shape.id,
+})
+
+export const FeedSchema = z.object({
+  feedId: PostSchema.shape.id,
+  type: z.string({ message: requiredMessage("نوع فید") }),
+})
+
+export const SavedSchema = z.object({
+  id: PostSchema.shape.id,
+})

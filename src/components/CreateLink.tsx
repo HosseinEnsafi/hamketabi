@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogDescription,
   DialogTrigger,
   DialogTitle,
   DialogClose,
@@ -15,6 +16,7 @@ import {
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
+  DrawerDescription,
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
@@ -54,8 +56,12 @@ const CreateLink = () => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="sr-only">میخواهید چه چیزی ایجاد کنید؟</DialogTitle>
+            <DialogTitle className="sr-only">ایجاد کنید؟</DialogTitle>
+            <DialogDescription className="sr-only">
+              گزینه ای که قصد ایجاد آن را دارید انتخاب کنید
+            </DialogDescription>
           </DialogHeader>
+          <DialogClose asChild></DialogClose>
           <CreateOptions onClose={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
@@ -69,7 +75,10 @@ const CreateLink = () => {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle className="sr-only">میخواهید چه چیزی ایجاد کنید؟</DrawerTitle>
+          <DrawerTitle className="sr-only">ایجاد کنید؟</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            گزینه ای که قصد ایجاد آن را دارید انتخاب کنید
+          </DrawerDescription>
         </DrawerHeader>
         <CreateOptions onClose={() => setOpen(false)} />
         <DrawerFooter className="pt-2"></DrawerFooter>

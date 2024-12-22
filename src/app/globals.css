@@ -72,3 +72,17 @@
     margin-right: 0 !important;
   }
 }
+
+@layer components {
+  .modal-content {
+    @apply gap-0 bg-card !p-0;
+  }
+
+  .modal-item {
+    @apply w-full !rounded-none !bg-transparent;
+  }
+
+  .outline-action-btn {
+    @apply flex flex-row-reverse items-center gap-2 rounded-3xl bg-muted p-1 px-3 [&_svg]:size-5;
+  }
+}

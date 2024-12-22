@@ -7,6 +7,7 @@ export const fetchFeedsPosts = async (): Promise<PostFeedItem[]> => {
 
   const posts = await db.post.findMany({
     include: {
+      _count: { select: { comments: true } },
       user: {
         select: {
           id: true,
@@ -20,16 +21,12 @@ export const fetchFeedsPosts = async (): Promise<PostFeedItem[]> => {
           phoneNumber: true,
         },
       },
-      _count: { select: { likes: true, savedBy: true, comments: true } },
-      likes: { where: { userId }, select: { id: true } },
-      savedBy: { where: { userId }, select: { id: true } },
+      likes: { where: { userId } },
+      savedBy: { where: { userId } },
     },
   })
-
-  return posts.map(({ likes, savedBy, ...post }) => ({
+  return posts.map(({ ...post }) => ({
     ...post,
     type: "POST",
-    hasLiked: likes.length > 0,
-    hasSaved: savedBy.length > 0,
   }))
 }

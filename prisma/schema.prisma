@@ -8,34 +8,35 @@ datasource db {
 }
 
 model User {
-  id            String      @id @default(cuid())
-  name          String?     @unique
-  email         String?     @unique
-  phoneNumber   String?     @unique
-  image         String?     @unique
+  id            String     @id @default(cuid())
+  name          String?    @unique
+  email         String?    @unique
+  phoneNumber   String?    @unique
+  image         String?    @unique
   password      String?
   phoneVerified DateTime?
   accounts      Account[]
-  role          UserRole    @default(USER)
+  role          UserRole   @default(USER)
   posts         Post[]
   likes         Like[]
   comments      Comment[]
-  saved         SavedItem[]
+  saved         Saved[]
   quotes        Quote[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  bookLists     BookList[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Post {
-  id       String      @id @default(cuid())
+  id       String    @id @default(cuid())
   userId   String
-  user     User        @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
   title    String
-  image    String      @unique
+  image    String    @unique
   body     String
-  likes    Like[]      @relation()
+  likes    Like[]    @relation()
   comments Comment[]
-  savedBy  SavedItem[]
+  savedBy  Saved[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -44,68 +45,107 @@ model Post {
 }
 
 model Quote {
-  id        String      @id @default(cuid())
+  id        String    @id @default(cuid())
   body      String
   userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookId    String
-  book      Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  book      Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   likes     Like[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  savedBy   SavedItem[]
+  savedBy   Saved[]
+  comments  Comment[]
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
 }
 
 model Book {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   title     String
   author    String
   quotes    Quote[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  savedBy   Saved[]
+  bookList  BookList[] @relation("BookListBooks")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Like {
   id           String       @id @default(cuid())
   userId       String
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likeableId   String
   likeableType LikeableType
-  post         Post?        @relation(fields: [likeableId], references: [id], map: "Like_Post_likeableId_fkey")
-  comment      Comment?     @relation(fields: [likeableId], references: [id], map: "Like_Comment_likeableId_fkey")
-  quote        Quote?       @relation(fields: [likeableId], references: [id], map: "Like_Quote_likeableId_fkey")
+  postId       String?
+  post         Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  commentId    String?
+  comment      Comment?     @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  quoteId      String?
+  quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  bookListId   String?
+  bookList     BookList?    @relation(fields: [bookListId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  @@unique([userId, likeableId, likeableType])
+  @@unique([userId, postId])
+  @@unique([userId, quoteId])
+  @@unique([userId, commentId])
+  @@unique([userId, bookListId])
   @@index([userId])
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  body      String
-  postId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  likes     Like[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String          @id @default(cuid())
+  body            String
+  commentAbleType CommentAbleType
+  postId          String?
+  post            Post?           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  quoteId         String?
+  quote           Quote?          @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes           Like[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  bookListId      String?
+  bookList        BookList?       @relation(fields: [bookListId], references: [id])
+
+  @@unique([userId, postId])
+  @@index([userId])
 }
 
-model SavedItem {
+model Saved {
   id           String       @id @default(cuid())
   userId       String
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  saveableId   String
   saveableType SaveableType
-  post         Post?        @relation(fields: [saveableId], references: [id], onDelete: Cascade, map: "Save_Post_saveableId_fkey")
-  quote        Quote?       @relation(fields: [saveableId], references: [id], onDelete: Cascade, map: "Save_Quote_saveableId_fkey")
+  postId       String? // Nullable
+  post         Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  quoteId      String? // Nullable
+  quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  bookId       String? // Nullable
+  book         Book?        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookListId   String? // Nullable
+  bookList     BookList?    @relation(fields: [bookListId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([userId, postId])
+  @@unique([userId, quoteId])
+  @@unique([userId, bookId])
+  @@unique([userId, bookListId]) // Allow a user to save a booklist
+  @@index([userId])
+}
 
-  @@unique([userId, saveableId, saveableType])
+model BookList {
+  id        String    @id @default(cuid())
+  title     String
+  books     Book[]    @relation("BookListBooks")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes     Like[]
+  saved     Saved[]
+  comments  Comment[]
 }
 
 model Account {
@@ -147,11 +187,18 @@ enum LikeableType {
   POST
   COMMENT
   QUOTE
+  BOOKLIST
 }
 
 enum SaveableType {
   POST
-  COMMENT
   QUOTE
   BOOK
+  BOOKLIST
+}
+
+enum CommentAbleType {
+  POST
+  QUOTE
+  BOOKLIST
 }

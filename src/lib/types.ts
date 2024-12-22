@@ -1,4 +1,4 @@
-import type { Comment, Like, Post, SavedItem, User } from "@prisma/client"
+import type { Comment, Like, Post, Quote, Saved, User } from "@prisma/client"
 export type ActionResponse =
   | { error: string; success?: undefined }
   | { success: string; error?: undefined }
@@ -10,18 +10,21 @@ export type safeUser = Omit<User, "password">
 export type FeedItem = {
   type: FeedType
   user: safeUser
-  hasLiked: boolean
-  hasSaved: boolean
+  likes: Like[]
+  savedBy: Saved[]
   _count: {
-    likes: number
-    savedBy: number
     comments: number
   }
 }
 
 export type PostFeedItem = FeedItem &
   Post & {
-    type: "POST"
+    type: Extract<FeedType, "POST">
+  }
+
+export type QuoteFeedItem = FeedItem &
+  Quote & {
+    type: Extract<FeedType, "QUOTE">
   }
 
 export type CommentWithExtras = Comment & { user: User }
@@ -30,11 +33,11 @@ export type LikeWithExtras = Like & { user: User }
 export type PostWithExtras = Post & {
   comments: CommentWithExtras[]
   likes: LikeWithExtras[]
-  savedBy: SavedItem[]
+  savedBy: Saved[]
   user: safeUser
 }
 
-export type UnifiedFeedItem = PostFeedItem
+export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
 /*   | BooklistFeedItem
   | QuoteFeedItem
   | ReviewFeedItem */
@@ -49,7 +52,7 @@ export type FollowingWithExtras = Follows & { following: UserWithFollows }
  */
 export type UserWithExtras = safeUser & {
   posts: Post[]
-  saved: SavedItem[]
+  saved: Saved[]
   /*   followedBy: FollowerWithExtras[]
   following: FollowingWithExtras[] */
 }

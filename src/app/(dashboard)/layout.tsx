@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header className="flex w-full justify-center">
           <SearchBook className="lg:3/4 md:w-2/3" />
         </header>
-        <main className="mx-auto flex max-w-md justify-center px-4 pb-16 sm:pb-4">
+        <main className="mx-auto flex max-w-sm flex-col justify-center gap-12 px-4 pb-16 sm:max-w-lg sm:pb-4">
           {children}
         </main>
       </div>
