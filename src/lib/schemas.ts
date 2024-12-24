@@ -1,6 +1,5 @@
 import z, { ZodSchema } from "zod"
 import { MAX_BODY_POST, MAX_TITLE_POST, MIN_BODY_POST, MIN_TITLE_POST } from "./constants"
-import Post from "@/components/Post"
 const phoneRegex = /^09[0-9]{9}$/
 const isEnglishAlphabetRegex = /^[a-zA-Z]+$/
 
@@ -21,7 +20,13 @@ export function validateWithZodSchema<T>(schema: ZodSchema<T>, data: unknown): T
   return result.data
 }
 
+const IdSchema = z
+  .string({ message: requiredMessage("آیدی") })
+  .trim()
+  .min(1, { message: emptyMessage("آیدی") })
+
 export const UserSchema = z.object({
+  id: IdSchema,
   phoneNumber: z
     .string({ message: requiredMessage("شماره تلفن") })
     .regex(phoneRegex, { message: "فرمت شماره موبایل درست نیست" }),
@@ -60,35 +65,39 @@ export const PhoneNumberSchema = UserSchema.shape.phoneNumber
 export const PasswordSchema = UserSchema.shape.password
 
 export const PostSchema = z.object({
-  id: z
-    .string({ message: requiredMessage("آیدی") })
-    .trim()
-    .min(1, { message: emptyMessage("آیدی") }),
+  id: IdSchema,
   title: z
     .string({ message: requiredMessage("عنوان") })
     .min(MIN_TITLE_POST, { message: minMessage("عنوان", MIN_TITLE_POST) })
     .max(MAX_TITLE_POST, { message: maxMessage("عنوان", MAX_TITLE_POST) }),
-  image: z.string({ message: requiredMessage("آدرس عکس") }).url({ message: "فرمت آدرس عکس صحیح نیست" }),
   body: z
     .string({ message: requiredMessage("متن") })
-    .trim()
-    .min(1, { message: emptyMessage("متن") })
     .min(MIN_BODY_POST, { message: minMessage("متن", MIN_BODY_POST) })
     .max(MAX_BODY_POST, { message: maxMessage("متن", MAX_BODY_POST) }),
+  image: z.string({ message: requiredMessage("آدرس عکس") }).url({ message: "فرمت آدرس عکس صحیح نیست" }),
 })
 
 export const CreatePostSchema = PostSchema.omit({ id: true })
 export const DeletePostSchema = PostSchema.pick({ id: true })
 
-export const LikeSchema = z.object({
-  id: PostSchema.shape.id,
-})
-
 export const FeedSchema = z.object({
-  feedId: PostSchema.shape.id,
+  feedId: IdSchema,
   type: z.string({ message: requiredMessage("نوع فید") }),
 })
 
-export const SavedSchema = z.object({
-  id: PostSchema.shape.id,
+export const LikeSchema = z.object({
+  feedId: IdSchema,
 })
+
+export const BookmarkSchema = z.object({
+  feedId: IdSchema,
+})
+
+const CommentSchema = z.object({
+  id: IdSchema,
+  feedId: IdSchema,
+  body: z.string({ message: requiredMessage("کامنت") }),
+})
+
+export const CreateComment = CommentSchema.omit({ id: true })
+export const DeleteComment = CommentSchema.pick({ id: true })

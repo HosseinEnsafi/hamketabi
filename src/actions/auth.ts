@@ -11,14 +11,14 @@ import {
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
 import { signIn, signOut } from "@/auth"
 import { getUserByName, getUserByIdentifier, getUserByPhoneNumber } from "@/data/user"
-import { comparePassword, hashPassword, renderError } from "@/lib/utils"
+import { comparePassword, generateSalt, hashPassword, renderError } from "@/lib/utils"
 import { generateVerificationToken, sendPhoneNumberVerification } from "@/lib/tokens"
 import { getVerificationToken } from "@/data/verification-token"
 
 export const register = async (values: z.infer<typeof RegisterSchema>, token: string) => {
   try {
     const { name, password, phoneNumber } = validateWithZodSchema(RegisterSchema, values)
-    const hashedPassword = hashPassword(password)
+    const hashedPassword = hashPassword(password, generateSalt())
 
     const [existingToken, existingUser] = await Promise.all([
       getVerificationToken(phoneNumber, token),
@@ -65,10 +65,7 @@ export const newVerification = async (phoneNumber: string, name: string) => {
     if (nameExist) throw new Error("این نام کاربری از پیش انتخاب شده است")
 
     const verificationToken = generateVerificationToken(phoneNumber)
-    await sendPhoneNumberVerification(
-      verificationToken.phoneNumber,
-      verificationToken.token,
-    )
+    await sendPhoneNumberVerification(verificationToken.phoneNumber, verificationToken.token)
 
     await deleteAllVerificationTokens(phoneNumber)
 
@@ -96,11 +93,9 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       return { error: "کاربری با این مشخصات یافت نشد" }
     }
 
-    if (!comparePassword(password, existingUser.password))
-      return { error: "رمز عبور صحت ندارد" }
+    if (!comparePassword(password, existingUser.password)) return { error: "رمز عبور صحت ندارد" }
 
-    if (!existingUser.phoneVerified)
-      return { error: "لطفاً شماره تلفن خود را تأیید کنید" }
+    if (!existingUser.phoneVerified) return { error: "لطفاً شماره تلفن خود را تأیید کنید" }
 
     await signIn("credentials", {
       identifier,
@@ -129,10 +124,7 @@ export const requestReset = async (phoneNumber: string) => {
     if (!existingUser) return { error: "کاربری با این شماره تلفن یافت نشد" }
 
     const verificationToken = generateVerificationToken(phoneNumber)
-    await sendPhoneNumberVerification(
-      verificationToken.phoneNumber,
-      verificationToken.token,
-    )
+    await sendPhoneNumberVerification(verificationToken.phoneNumber, verificationToken.token)
 
     await deleteAllVerificationTokens(phoneNumber)
 
@@ -150,10 +142,7 @@ export const requestReset = async (phoneNumber: string) => {
   }
 }
 
-export const verifyReset = async (
-  data: z.infer<typeof VerifyResetSchema>,
-  token: string,
-) => {
+export const verifyReset = async (data: z.infer<typeof VerifyResetSchema>, token: string) => {
   try {
     const { password, phoneNumber } = validateWithZodSchema(VerifyResetSchema, data)
 
@@ -174,7 +163,7 @@ export const verifyReset = async (
       return { error: "کد تایید منقضی شده است" }
     }
 
-    const hashedPassword = hashPassword(password)
+    const hashedPassword = hashPassword(password, generateSalt())
     await db.user.update({
       where: { phoneNumber },
       data: { password: hashedPassword },
@@ -209,10 +198,7 @@ export const deleteAllVerificationTokens = async (phoneNumber: string) => {
   })
 }
 
-export const deleteUniqueVerificationToken = async (
-  phoneNumber: string,
-  token: string,
-) => {
+export const deleteUniqueVerificationToken = async (phoneNumber: string, token: string) => {
   await db.verificationToken.delete({
     where: {
       phoneNumber_token: {

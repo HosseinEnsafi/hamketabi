@@ -19,8 +19,7 @@ export const renderError = (error: unknown): { error: string } => {
   if (isRedirectError(error)) throw error
 
   if (error instanceof AuthError) {
-    if (error.type === "CredentialsSignin")
-      return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
+    if (error.type === "CredentialsSignin") return { error: "شماره تلفن یا رمز ورود معتبر نیست" }
 
     return { error: "خطای نامشخصی هنگام ورود رخ داد" }
   }
@@ -35,8 +34,7 @@ export const renderError = (error: unknown): { error: string } => {
   }
 
   if (error instanceof Prisma.PrismaClientValidationError) {
-    const userMessage =
-      "داده‌های ورودی نامعتبر است. لطفاً اطلاعات صحیح را وارد کرده و دوباره تلاش کنید."
+    const userMessage = "داده‌های ورودی نامعتبر است. لطفاً اطلاعات صحیح را وارد کرده و دوباره تلاش کنید."
     const devMessage = `خطای اعتبارسنجی Prisma: ${error.message}. اطمینان حاصل کنید که داده‌های ورودی با نوع‌های مورد انتظار مطابقت دارند.`
     return {
       error: isDevelopment ? devMessage : userMessage,
@@ -44,8 +42,7 @@ export const renderError = (error: unknown): { error: string } => {
   }
 
   if (error instanceof Prisma.PrismaClientInitializationError) {
-    const userMessage =
-      "در اتصال به پایگاه داده مشکلی پیش آمده است. لطفاً بعداً دوباره تلاش کنید."
+    const userMessage = "در اتصال به پایگاه داده مشکلی پیش آمده است. لطفاً بعداً دوباره تلاش کنید."
     const devMessage = `خطای راه‌اندازی Prisma: ${error.message}. اتصال به پایگاه داده را بررسی کنید.`
     return {
       error: isDevelopment ? devMessage : userMessage,
@@ -53,22 +50,24 @@ export const renderError = (error: unknown): { error: string } => {
   }
 
   const userMessage = "یک خطای غیرمنتظره رخ داده است. لطفاً بعداً دوباره تلاش کنید."
-  const devMessage =
-    error instanceof Error ? error.message : "یک خطای ناشناخته رخ داده است."
+  const devMessage = error instanceof Error ? error.message : "یک خطای ناشناخته رخ داده است."
 
   return {
     error: isDevelopment ? devMessage : userMessage,
   }
 }
 
-const salt = "6f30fe2f285f82dae28f5d2294e12ee3"
-
-export function hashPassword(password: string) {
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex")
-  return hash
+export function generateSalt(length: number = 16): string {
+  return crypto.randomBytes(length).toString("hex")
 }
 
-export function comparePassword(password: string, storedHash: string) {
-  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex")
-  return hash === storedHash
+export function hashPassword(password: string, salt: string): string {
+  const hash = crypto.pbkdf2Sync(password, salt, 10000, 32, "sha512").toString("hex")
+  return `${salt}:${hash}`
+}
+
+export function comparePassword(password: string, storedHash: string): boolean {
+  const [salt, hash] = storedHash.split(":")
+  const hashToCompare = crypto.pbkdf2Sync(password, salt, 10000, 32, "sha512").toString("hex")
+  return hash === hashToCompare
 }
