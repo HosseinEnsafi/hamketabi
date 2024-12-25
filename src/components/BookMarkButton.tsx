@@ -2,22 +2,23 @@
 import { BookmarkIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useOptimistic } from "react"
-import type { SaveableType, Saved } from "@prisma/client"
-import { toast } from "sonner"
-import { FeedType, UnifiedFeedItem } from "@/lib/types"
+import type { Saved } from "@prisma/client"
+import { FeedType } from "@/lib/types"
 import { Button } from "./ui/button"
 import { saveFeedItem } from "@/actions/feed"
 
 interface BookMarkButtonProps {
-  feed: UnifiedFeedItem
+  feedId: string
+  savedBy: Saved[]
+  feedType: FeedType
   userId: string
 }
 
-const BookMarkButton = ({ feed, userId }: BookMarkButtonProps) => {
-  const { savedBy } = feed
+const BookMarkButton = ({ feedId, feedType, savedBy, userId }: BookMarkButtonProps) => {
   const predicate = (saved: Saved) => saved.userId === userId
-  const [optimisticSaved, toggleOptimisticLSave] = useOptimistic(savedBy, (state, saved: Saved) =>
-    state.some(predicate) ? state.filter((saved) => saved.userId !== userId) : [...state, saved],
+  const [optimisticSaved, toggleOptimisticLSave] = useOptimistic(savedBy, (state, newSaved) =>
+    // @ts-expect-error only need userId for evaluation. others are not needed
+    state.some(predicate) ? state.filter((saved) => saved.userId !== userId) : [...state, newSaved],
   )
 
   return (
@@ -27,25 +28,15 @@ const BookMarkButton = ({ feed, userId }: BookMarkButtonProps) => {
           const feedId = formData.get("feedId")!.toString()
           const type = formData.get("type")!.toString() as FeedType
 
-          toggleOptimisticLSave({
-            id: String(Math.random()),
-            userId,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            saveableType: type as SaveableType,
-            postId: null,
-            quoteId: null,
-            bookListId: null,
-            bookId: null,
-          })
+          toggleOptimisticLSave({ userId })
 
           await saveFeedItem({ feedId, type })
         }}
       >
-        <input type="hidden" name="feedId" value={feed.id} />
-        <input type="hidden" name="type" value={feed.type} />
+        <input type="hidden" name="feedId" value={feedId} />
+        <input type="hidden" name="type" value={feedType} />
         <Button
-          className="flex justify-center rounded-full p-1"
+          className="flex justify-center rounded-full p-1 [&_svg]:size-5"
           type="submit"
           variant={"ghost"}
           size={"icon"}

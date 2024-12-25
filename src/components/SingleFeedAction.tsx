@@ -1,22 +1,22 @@
-import { FeedType, UnifiedFeedItem } from "@/lib/types"
+import { FeedType, PostWithExtras } from "@/lib/types"
 import LikeButton from "./LikeButton"
 import CommentButton from "./CommentButton"
 import ShareFeedItemButton from "./ShareFeedItemButton"
 import BookMarkButton from "./BookMarkButton"
 
-interface FeedActionsProps {
-  feed: UnifiedFeedItem
+interface SingleFeedActionsProps {
+  feed: PostWithExtras // | QuoteWithExtras
   userId: string
   type: FeedType
 }
 
-const FeedActions = ({ feed, userId, type }: FeedActionsProps) => {
+const SingleFeedActions = ({ feed, userId, type }: SingleFeedActionsProps) => {
   return (
     <div className="flex flex-row-reverse items-center justify-between px-3">
       <div className="flex flex-row-reverse items-center gap-2">
         <LikeButton feedType={type} feedId={feed.id} likes={feed.likes} userId={userId} />
         <CommentButton
-          commentsCount={feed._count.comments}
+          commentsCount={feed.comments.length}
           feedId={feed.id}
           userId={userId}
           feedType={type}
@@ -24,8 +24,8 @@ const FeedActions = ({ feed, userId, type }: FeedActionsProps) => {
         <ShareFeedItemButton feedId={feed.id} feedType={type} />
       </div>
 
-      <BookMarkButton feedType={type} feedId={feed.id} savedBy={feed.savedBy} userId={userId} />
+      <BookMarkButton savedBy={feed.savedBy} feedType={type} feedId={feed.id} userId={userId} />
     </div>
   )
 }
-export default FeedActions
+export default SingleFeedActions

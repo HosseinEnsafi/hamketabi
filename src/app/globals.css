@@ -71,6 +71,25 @@
     overflow: visible !important;
     margin-right: 0 !important;
   }
+
+  ::-webkit-scrollbar {
+    scrollbar-width: thin;
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 @layer components {
@@ -84,5 +103,13 @@
 
   .outline-action-btn {
     @apply flex flex-row-reverse items-center gap-2 rounded-3xl bg-muted p-1 px-3 [&_svg]:size-5;
+  }
+
+  .scroll-none {
+    scrollbar-width: none;
+  }
+
+  .scroll-none ::-webkit-scrollbar {
+    display: none;
   }
 }

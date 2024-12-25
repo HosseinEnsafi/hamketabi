@@ -109,6 +109,8 @@ model Comment {
   bookList        BookList?       @relation(fields: [bookListId], references: [id])
 
   @@unique([userId, postId])
+  @@unique([userId, quoteId])
+  @@unique([userId, bookListId])
   @@index([userId])
 }
 

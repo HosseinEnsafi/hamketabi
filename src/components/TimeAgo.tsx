@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-const timeStyles = "text-[10px] text-muted-foreground"
+const timeStyles = "text-xs text-muted-foreground"
 
 const TimeAgo = ({ date, className }: { date: Date | string; className?: string }) => {
   const parsedDate = new Date(date)

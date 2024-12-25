@@ -1,18 +1,17 @@
-import { User } from "next-auth"
 import Image from "next/image"
 
 type UserAvatarProps = {
-  user: User
+  image: string | null | undefined
 }
 
-export default function UserAvatar({ user }: UserAvatarProps) {
+export default function UserAvatar({ image }: UserAvatarProps) {
   return (
-    <div className="relative size-8 overflow-hidden rounded-full">
+    <div className="relative size-9 overflow-hidden rounded-full">
       <Image
-        src={user.image ?? "/images/default_avatar_profile.png"}
+        src={image ?? "/images/default_avatar_profile.png"}
         alt="avatar profile"
-        width={32}
-        height={32}
+        width={36}
+        height={36}
       />
     </div>
   )

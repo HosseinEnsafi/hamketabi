@@ -99,5 +99,5 @@ const CommentSchema = z.object({
   body: z.string({ message: requiredMessage("کامنت") }),
 })
 
-export const CreateComment = CommentSchema.omit({ id: true })
-export const DeleteComment = CommentSchema.pick({ id: true })
+export const CreateCommentSchema = CommentSchema.omit({ id: true })
+export const DeleteCommentSchema = CommentSchema.pick({ id: true })

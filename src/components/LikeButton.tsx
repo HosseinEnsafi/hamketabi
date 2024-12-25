@@ -1,23 +1,25 @@
 "use client"
 import { likeFeedItem } from "@/actions/feed"
-import { FeedType, UnifiedFeedItem } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { HeartIcon } from "lucide-react"
 import { useOptimistic } from "react"
-import type { Like, LikeableType } from "@prisma/client"
+import type { Like } from "@prisma/client"
 
 import { toast } from "sonner"
+import { FeedType } from "@/lib/types"
 interface LikeButtonProps {
-  feed: UnifiedFeedItem
+  likes: Like[]
+  feedId: string
+  feedType: FeedType
   userId: string
 }
 
-const LikeButton = ({ feed, userId }: LikeButtonProps) => {
-  const { likes } = feed
+const LikeButton = ({ feedId, userId, likes, feedType }: LikeButtonProps) => {
   const predicate = (like: Like) => like.userId === userId
 
-  const [optimisticLikes, toggleOptimisticLike] = useOptimistic(likes, (state, like: Like) =>
-    state.some(predicate) ? state.filter((like) => like.userId !== userId) : [...state, like],
+  const [optimisticLikes, toggleOptimisticLike] = useOptimistic(likes, (state, newLike) =>
+    // @ts-expect-error only need userId for evaluation. others are not needed
+    state.some(predicate) ? state.filter((like) => like.userId !== userId) : [...state, newLike],
   )
 
   return (
@@ -25,36 +27,23 @@ const LikeButton = ({ feed, userId }: LikeButtonProps) => {
       <form
         action={async (formData: FormData) => {
           const feedId = formData.get("feedId")!.toString()
-          const type = formData.get("type")!.toString() as FeedType
+          const type = formData.get("type")!.toString()
 
-          toggleOptimisticLike({
-            id: String(Math.random()),
-            userId,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            likeableType: type as LikeableType,
-            commentId: null,
-            postId: null,
-            quoteId: null,
-            bookListId: null,
-          })
+          toggleOptimisticLike({ userId })
 
           const res = await likeFeedItem({ feedId, type })
           if (res && "error" in res) toast.error(res.error)
         }}
       >
-        <input type="hidden" name="feedId" value={feed.id} />
-        <input type="hidden" name="type" value={feed.type} />
+        <input type="hidden" name="feedId" value={feedId} />
+        <input type="hidden" name="type" value={feedType} />
         <button type="submit" className="outline-action-btn">
           <HeartIcon
-            className={cn(
-              {
-                "fill-red-500 text-red-500": optimisticLikes.some(predicate),
-              },
-              "size-5",
-            )}
+            className={cn("size-5", {
+              "fill-red-500 text-red-500": optimisticLikes.some(predicate),
+            })}
           />
-          <span aria-label="like count">{optimisticLikes.length}</span>
+          <span aria-label="تعداد لایک">{optimisticLikes.length}</span>
         </button>
       </form>
     </div>

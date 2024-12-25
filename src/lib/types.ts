@@ -5,11 +5,12 @@ export type ActionResponse =
 
 export type FeedType = "POST" | "BOOKLIST" | "QUOTE" | "REVIEW"
 
-export type safeUser = Omit<User, "password">
+export type SafeUser = Omit<User, "password">
+export type UserInfo = Pick<SafeUser, "name" | "image" | "id">
 
 export type FeedItem = {
   type: FeedType
-  user: safeUser
+  user: UserInfo
   likes: Like[]
   savedBy: Saved[]
   _count: {
@@ -27,14 +28,15 @@ export type QuoteFeedItem = FeedItem &
     type: Extract<FeedType, "QUOTE">
   }
 
-export type CommentWithExtras = Comment & { user: User }
-export type LikeWithExtras = Like & { user: User }
+export type CommentWithExtras = Comment & { user: UserInfo }
+export type LikeWithExtras = Like & { user: UserInfo }
+export type SavedWithExtras = Saved & { user: UserInfo }
 
 export type PostWithExtras = Post & {
+  user: SafeUser
   comments: CommentWithExtras[]
   likes: LikeWithExtras[]
-  savedBy: Saved[]
-  user: safeUser
+  savedBy: SavedWithExtras[]
 }
 
 export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
@@ -42,7 +44,7 @@ export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
   | QuoteFeedItem
   | ReviewFeedItem */
 
-/* export type UserWithFollows = safeUser & {
+/* export type UserWithFollows = SafeUser & {
   following: Follows[]
   followedBy: Follows[]
 } */
@@ -50,7 +52,7 @@ export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
 export type FollowerWithExtras = Follows & { follower: UserWithFollows }
 export type FollowingWithExtras = Follows & { following: UserWithFollows }
  */
-export type UserWithExtras = safeUser & {
+export type UserWithExtras = SafeUser & {
   posts: Post[]
   saved: Saved[]
   /*   followedBy: FollowerWithExtras[]

@@ -7,14 +7,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PhoneNumberSchema, PasswordSchema } from "@/lib/schemas"
 import { requestReset, verifyReset } from "@/actions/auth"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { z } from "zod"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp"
@@ -68,7 +61,6 @@ const ResetForm = () => {
 
   const handleVerifyOTP = (values: { password: string }) => {
     const { phoneNumber } = phoneForm.getValues()
-    console.log("Verifying OTP:", values, otp)
     setVerifyError("")
     setVerifySuccess("")
     startTransition(() => {
@@ -93,10 +85,7 @@ const ResetForm = () => {
           }
         >
           <Form {...phoneForm}>
-            <form
-              className="flex flex-col space-y-4"
-              onSubmit={phoneForm.handleSubmit(handleSendOTP)}
-            >
+            <form className="flex flex-col space-y-4" onSubmit={phoneForm.handleSubmit(handleSendOTP)}>
               <FormField
                 control={phoneForm.control}
                 name="phoneNumber"
@@ -149,10 +138,7 @@ const ResetForm = () => {
                 pattern={REGEXP_ONLY_DIGITS}
                 onChange={(value) => setOtp(value)}
               >
-                <InputOTPGroup
-                  className="mt-4 flex w-full items-center justify-center"
-                  dir="ltr"
-                >
+                <InputOTPGroup className="mt-4 flex w-full items-center justify-center" dir="ltr">
                   {[...Array(6)].map((_, index) => (
                     <InputOTPSlot key={index} index={index} />
                   ))}

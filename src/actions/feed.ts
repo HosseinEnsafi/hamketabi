@@ -24,17 +24,18 @@ export const deleteFeedItem = async (values: z.infer<typeof FeedSchema>) => {
 export const likeFeedItem = async (values: z.infer<typeof FeedSchema>) => {
   try {
     const { type, feedId } = validateWithZodSchema(FeedSchema, values)
-    if (type === "POST") await likePost({ id: feedId })
+    if (type === "POST") await likePost({ feedId })
   } catch (error) {
     return renderError(error)
   } finally {
     revalidatePath("/feeds")
   }
 }
+
 export const saveFeedItem = async (values: z.infer<typeof FeedSchema>) => {
   try {
     const { type, feedId } = validateWithZodSchema(FeedSchema, values)
-    if (type === "POST") await savePost({ id: feedId })
+    if (type === "POST") await savePost({ feedId })
   } catch (error) {
     return renderError(error)
   } finally {
