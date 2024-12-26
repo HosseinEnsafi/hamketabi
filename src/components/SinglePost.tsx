@@ -1,12 +1,10 @@
 import { PostWithExtras } from "@/lib/types"
 import UserAvatar from "./UserAvatar"
 import { auth } from "@/auth"
-import { fetchPostById } from "@/data/post"
 import Time from "@/components/Time"
 import { Button } from "./ui/button"
 import { ClockIcon } from "lucide-react"
 import Image from "next/image"
-import FeedActions from "./FeedActions"
 import SingleFeedActions from "./SingleFeedAction"
 import CommentForm from "./CommentForm"
 import Comment from "./Comment"
@@ -18,7 +16,6 @@ interface SinglePostProps {
 const SinglePost = async ({ post }: SinglePostProps) => {
   const session = await auth()
   const postUsername = post?.user.name
-  const userId = session?.user.id
 
   if (!session) return null
 
@@ -26,10 +23,10 @@ const SinglePost = async ({ post }: SinglePostProps) => {
     <article className="flex flex-col gap-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
-          <UserAvatar image={session.user.image} />
+          <UserAvatar image={post.user.image} />
           <div className="flex flex-col gap-1 text-sm">
             <div className="flex items-center gap-2">
-              <p className="font-semibold">{post.user.name}</p>
+              <p className="font-semibold">{postUsername}</p>
               <p className="font-light text-muted-foreground">پست منشر کرد</p>
             </div>
             <div className="flex gap-4">
@@ -63,10 +60,14 @@ const SinglePost = async ({ post }: SinglePostProps) => {
 
       <SingleFeedActions type="POST" feed={post} userId={post.user.id} />
 
-      <CommentForm feedId={post.id} />
+      <CommentForm commentAbleId={post.id} />
+
+      <hr />
 
       {post.comments.length > 0 &&
-        post.comments.map((comment) => <Comment comment={comment} key={comment.id} />)}
+        post.comments.map((comment) => (
+          <Comment user={session.user} comment={comment} key={comment.id} />
+        ))}
     </article>
   )
 }

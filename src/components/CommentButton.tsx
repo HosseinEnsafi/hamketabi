@@ -7,14 +7,11 @@ interface CommentButtonProps {
   commentsCount: number
   feedId: string
   feedType: FeedType
-  userId: string
 }
 
-const CommentButton = ({ feedId, feedType, commentsCount, userId }: CommentButtonProps) => {
+const CommentButton = ({ feedId, feedType, commentsCount }: CommentButtonProps) => {
   return (
     <div>
-      <input type="hidden" name="feedId" value={feedId} />
-      <input type="hidden" name="type" value={feedType} />
       <Link href={`${feedType.toLowerCase()}s/${feedId}`}>
         <button type="submit" className="outline-action-btn">
           <MessageCircleIcon />

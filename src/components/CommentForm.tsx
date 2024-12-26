@@ -1,22 +1,20 @@
 "use client"
 import { SendIcon } from "lucide-react"
 import { Button } from "./ui/button"
-import { CreateComment } from "@/actions/comment"
+import { createComment } from "@/actions/comment"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
-const CommentForm = ({ feedId }: { feedId: string }) => {
+const CommentForm = ({ commentAbleId, className }: { commentAbleId: string; className?: string }) => {
   return (
-    <div className="rounded bg-muted p-2">
+    <div className={cn("rounded bg-muted p-2", className)}>
       <form
         action={async (formData) => {
-          console.log(formData.entries())
           const body = formData.get("body")!.toString()
-          const feedId = formData.get("feedId")!.toString()
-          const res = await CreateComment({ body, feedId }, "POST")
+          const res = await createComment({ body, commentAbleId, commentAbleType: "POST" })
           if (res && "error" in res) toast.error(res.error)
         }}
       >
-        <input type="hidden" name="feedId" value={feedId} />
         <textarea
           placeholder="نظر خود را بنویسید..."
           className="scroll-none w-full resize-none bg-inherit text-base outline-none"

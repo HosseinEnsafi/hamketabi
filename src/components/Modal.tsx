@@ -17,7 +17,7 @@ import {
   DrawerDescription,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useMediaQuery } from "@/lib/hook"
+import { useMediaQuery } from "@/lib/hooks"
 
 interface ModalProps {
   open: boolean
@@ -25,7 +25,7 @@ interface ModalProps {
   title: string
   description?: string
   children: ReactNode
-  trigger: ReactNode // The trigger button or element
+  trigger: ReactNode
   closeIcon?: boolean
 }
 
@@ -39,7 +39,6 @@ const Modal = ({
   closeIcon = false,
 }: ModalProps) => {
   const isDesktop = useMediaQuery("(min-width: 768px)")
-
   const ModalContent = (
     <>
       {title && (

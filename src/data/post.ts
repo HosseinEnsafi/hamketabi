@@ -15,8 +15,8 @@ export const fetchFeedsPosts = async (): Promise<PostFeedItem[]> => {
           image: true,
         },
       },
-      likes: { where: { userId } },
-      savedBy: { where: { userId } },
+      likes: true,
+      savedBy: true,
     },
   })
   return posts.map(({ ...post }) => ({
@@ -61,6 +61,7 @@ export const fetchPostById = async (postId: string): Promise<PostWithExtras | nu
           where: { postId },
           include: {
             user: { select: { ...selectSafeUser } },
+            likes: true,
           },
         },
       },

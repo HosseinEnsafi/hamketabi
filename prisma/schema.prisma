@@ -102,11 +102,11 @@ model Comment {
   quote           Quote?          @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   userId          String
   user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookListId      String?
+  bookList        BookList?       @relation(fields: [bookListId], references: [id])
   likes           Like[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  bookListId      String?
-  bookList        BookList?       @relation(fields: [bookListId], references: [id])
 
   @@unique([userId, postId])
   @@unique([userId, quoteId])

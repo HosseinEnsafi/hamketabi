@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useRef, useState } from "react"
-import useOutsideClick from "@/lib/hook"
+import useOutsideClick from "@/lib/hooks"
 import { Switch } from "./ui/switch"
 import { useTheme } from "next-themes"
 import { logout } from "@/actions/auth"
@@ -47,10 +47,7 @@ const MoreOptions = () => {
         <InfoIcon />
         <DropdownMenuLabel>راهنما</DropdownMenuLabel>
       </DropdownMenuItem>
-      <DropdownMenuItem
-        className="cursor-pointer"
-        onClick={() => setShowThemeToggle(true)}
-      >
+      <DropdownMenuItem className="cursor-pointer" onClick={() => setShowThemeToggle(true)}>
         <SunMoonIcon />
         <DropdownMenuLabel>حالت صفحه</DropdownMenuLabel>
       </DropdownMenuItem>

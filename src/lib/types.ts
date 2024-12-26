@@ -28,7 +28,7 @@ export type QuoteFeedItem = FeedItem &
     type: Extract<FeedType, "QUOTE">
   }
 
-export type CommentWithExtras = Comment & { user: UserInfo }
+export type CommentWithExtras = Comment & { user: UserInfo; likes: Like[] }
 export type LikeWithExtras = Like & { user: UserInfo }
 export type SavedWithExtras = Saved & { user: UserInfo }
 

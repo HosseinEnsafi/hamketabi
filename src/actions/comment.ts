@@ -1,4 +1,5 @@
 "use server"
+
 import { getUserId } from "@/data/auth"
 import { db } from "@/lib/db"
 import { CreateCommentSchema, validateWithZodSchema } from "@/lib/schemas"
@@ -7,48 +8,47 @@ import { CommentAbleType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
-export const CreateComment = async (
-  values: z.infer<typeof CreateCommentSchema>,
-  commentAbleType: CommentAbleType,
-) => {
-  let pathToRevalidate = ""
+export const createComment = async (values: z.infer<typeof CreateCommentSchema>) => {
+  const pathMap: Record<CommentAbleType, (commentAbleId: string) => string> = {
+    POST: (commentAbleId) => `/posts/${commentAbleId}`,
+    QUOTE: (commentAbleId) => `/quotes/${commentAbleId}`,
+    BOOKLIST: (commentAbleId) => `/booklists/${commentAbleId}`,
+  }
+
+  const fieldMap: Record<CommentAbleType, string> = {
+    POST: "postId",
+    QUOTE: "quoteId",
+    BOOKLIST: "bookListId",
+  }
+
   try {
-    const { body, feedId } = validateWithZodSchema(CreateCommentSchema, values)
+    const { body, commentAbleId, commentAbleType } = validateWithZodSchema(CreateCommentSchema, values)
     const userId = await getUserId()
 
-    let comment
-    switch (commentAbleType) {
-      case "POST":
-        comment = await db.comment.findFirst({ where: { postId: feedId } })
-        pathToRevalidate = `/posts/${feedId}`
-        break
-      case "QUOTE":
-        comment = await db.comment.findFirst({ where: { quoteId: feedId } })
-        pathToRevalidate = `/quotes/${feedId}`
-        break
-      case "BOOKLIST":
-        comment = await db.comment.findFirst({ where: { bookListId: feedId } })
-        pathToRevalidate = `/booklists/${feedId}`
-        break
-      default:
-        throw new Error("نوع کامنت نامعتبر است")
-    }
+    const fieldKey = fieldMap[commentAbleType]
 
-    if (comment) throw new Error("شما از قبل نظر داده اید")
+    const comment = await db.comment.findFirst({
+      where: {
+        userId,
+        [fieldKey]: commentAbleId,
+      },
+    })
+
+    if (comment) throw new Error("شما از قبل نظر گذاشته اید")
 
     await db.comment.create({
       data: {
         userId,
         body,
         commentAbleType,
-        postId: commentAbleType === "POST" ? feedId : null,
-        quoteId: commentAbleType === "QUOTE" ? feedId : null,
-        bookListId: commentAbleType === "BOOKLIST" ? feedId : null,
+        [fieldKey]: commentAbleId,
       },
     })
   } catch (error) {
     return renderError(error)
   } finally {
+    if (!CreateCommentSchema.safeParse(values)) return { error: "مقادیر نامعتبر" }
+    const pathToRevalidate = pathMap[values.commentAbleType](values.commentAbleId)
     revalidatePath(pathToRevalidate)
   }
 }

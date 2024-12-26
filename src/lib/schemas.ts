@@ -1,5 +1,6 @@
 import z, { ZodSchema } from "zod"
 import { MAX_BODY_POST, MAX_TITLE_POST, MIN_BODY_POST, MIN_TITLE_POST } from "./constants"
+import { CommentAbleType, LikeableType, SaveableType } from "@prisma/client"
 const phoneRegex = /^09[0-9]{9}$/
 const isEnglishAlphabetRegex = /^[a-zA-Z]+$/
 
@@ -86,8 +87,20 @@ export const FeedSchema = z.object({
 })
 
 export const LikeSchema = z.object({
-  feedId: IdSchema,
+  id: IdSchema,
+  likeableId: IdSchema,
+  likeableType: z.nativeEnum(LikeableType),
 })
+
+export const ToggleLikeSchema = LikeSchema.omit({ id: true })
+
+export const SavedSchema = z.object({
+  id: IdSchema,
+  saveableId: IdSchema,
+  saveableType: z.nativeEnum(SaveableType),
+})
+
+export const ToggleSavedSchema = SavedSchema.omit({ id: true })
 
 export const BookmarkSchema = z.object({
   feedId: IdSchema,
@@ -95,9 +108,11 @@ export const BookmarkSchema = z.object({
 
 const CommentSchema = z.object({
   id: IdSchema,
-  feedId: IdSchema,
+  commentAbleId: IdSchema,
+  commentAbleType: z.nativeEnum(CommentAbleType),
   body: z.string({ message: requiredMessage("کامنت") }),
 })
 
 export const CreateCommentSchema = CommentSchema.omit({ id: true })
 export const DeleteCommentSchema = CommentSchema.pick({ id: true })
+export const LikeCommentSchema = CommentSchema.pick({ id: true })

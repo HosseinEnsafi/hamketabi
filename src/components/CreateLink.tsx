@@ -20,14 +20,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useMediaQuery } from "@/lib/hook"
+import { useMediaQuery } from "@/lib/hooks"
 import { ButtonHTMLAttributes, useState } from "react"
 import Link from "next/link"
 
-const TriggerLink = ({
-  className,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) => {
+const TriggerLink = ({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
     <Button
       {...props}
