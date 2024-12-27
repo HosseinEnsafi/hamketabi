@@ -16,7 +16,7 @@ const CommentOptions = ({ comment, userId }: { comment: CommentWithExtras; userI
   const [open, setOpen] = useState(false)
   const isMine = comment.user.id === userId
 
-  const modalTitle = "عملیات ممربوط به پست"
+  const modalTitle = "عملیات ممربوط به کامنت"
   const modalDesc = "از بین گزینه های انتخاب کنید"
 
   return (
@@ -29,6 +29,17 @@ const CommentOptions = ({ comment, userId }: { comment: CommentWithExtras; userI
         trigger={<TriggerOption onClick={() => setOpen(true)} />}
       >
         <div className="divide-y divide-neutral-500/20">
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(`${window.location.origin}`)
+              setOpen(false)
+            }}
+            variant="secondary"
+            className="modal-item"
+          >
+            اشتراک گذاری
+            <SendIcon />
+          </Button>{" "}
           <Button
             onClick={() => {
               navigator.clipboard.writeText(`${window.location.origin}`)

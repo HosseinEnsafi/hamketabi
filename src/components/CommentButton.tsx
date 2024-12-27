@@ -15,7 +15,9 @@ const CommentButton = ({ feedId, feedType, commentsCount }: CommentButtonProps) 
       <Link href={`${feedType.toLowerCase()}s/${feedId}`}>
         <button type="submit" className="outline-action-btn">
           <MessageCircleIcon />
-          <span>{commentsCount}</span>
+          <span className="text-sm leading-[0]" aria-label="تعداد کامنت">
+            {commentsCount}
+          </span>
         </button>
       </Link>
     </div>

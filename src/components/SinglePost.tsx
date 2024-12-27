@@ -20,7 +20,7 @@ const SinglePost = async ({ post }: SinglePostProps) => {
   if (!session) return null
 
   return (
-    <article className="flex flex-col gap-y-4">
+    <article className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-3">
           <UserAvatar image={post.user.image} />
@@ -44,7 +44,7 @@ const SinglePost = async ({ post }: SinglePostProps) => {
         </Button>
       </div>
 
-      <h2>{post.title}</h2>
+      <h2 className="!mt-6">{post.title}</h2>
 
       <div className="w-full overflow-hidden rounded-sm">
         <Image
@@ -56,18 +56,21 @@ const SinglePost = async ({ post }: SinglePostProps) => {
         />
       </div>
 
-      <p>{post.body}</p>
+      <p className="!mt-2">{post.body}</p>
 
       <SingleFeedActions type="POST" feed={post} userId={post.user.id} />
 
-      <CommentForm commentAbleId={post.id} />
+      <CommentForm className="!mt-8" commentAbleId={post.id} />
 
-      <hr />
+      <hr className="!mt-2" />
 
-      {post.comments.length > 0 &&
-        post.comments.map((comment) => (
-          <Comment user={session.user} comment={comment} key={comment.id} />
-        ))}
+      {post.comments.length > 0 && (
+        <ul className="!mt-2 flex flex-col gap-4">
+          {post.comments.map((comment) => (
+            <Comment user={session.user} comment={comment} key={comment.id} />
+          ))}
+        </ul>
+      )}
     </article>
   )
 }

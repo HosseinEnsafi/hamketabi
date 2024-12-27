@@ -30,7 +30,9 @@ const LikeButton = ({ likeableId, userId, likes, likeableType }: LikeButtonProps
               "fill-red-500 text-red-500": hasLiked,
             })}
           />
-          <span aria-label="تعداد لایک">{optimisticLikes.length}</span>
+          <span className="text-sm leading-[0]" aria-label="تعداد لایک">
+            {optimisticLikes.length}
+          </span>
         </button>
       </form>
     </div>

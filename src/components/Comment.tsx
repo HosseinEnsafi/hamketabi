@@ -5,35 +5,48 @@ import TimeAgo from "./TimeAgo"
 import CommentOptions from "./CommentOptions"
 import { User } from "next-auth"
 import CommentActions from "./CommentActions"
+import { cn } from "@/lib/utils"
 
-const Comment = ({ comment, user }: { comment: CommentWithExtras; user: User }) => {
+const Comment = ({
+  comment,
+  user,
+  className,
+}: {
+  comment: CommentWithExtras
+  user: User
+  className?: string
+}) => {
   const href = `/profile/${comment.user.name}`
 
-  if (!user.id) return
+  if (!user.id) return null
 
   return (
-    <div className="flex flex-col">
-      <div className="flex w-full gap-3">
-        <Link href={href}>
-          <UserAvatar image={comment.user.image} />
-        </Link>
-        <div className="flex-1 space-y-1.5">
-          <div className="flex items-center justify-between text-sm leading-none">
-            <div className="flex gap-2">
-              <Link href={href} className="font-semibold text-muted-foreground">
-                {comment.user.name}
-              </Link>
-              <p className="">{comment.body}</p>
-            </div>
+    <article className={cn("flex w-full gap-3", className)}>
+      <Link href={href} aria-label={`Visit ${comment.user.name}'s profile`}>
+        <UserAvatar image={comment.user.image} />
+      </Link>
+      <div className="flex-1 space-y-1.5">
+        <header className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Link
+              href={href}
+              className="font-semibold text-muted-foreground transition-colors hover:text-foreground"
+              aria-label={`Visit ${comment.user.name}'s profile`}
+            >
+              {comment.user.name}
+            </Link>
+            <p className="text-sm">{comment.body}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <CommentActions comment={comment} userId={user.id} />
             {user?.id && <CommentOptions comment={comment} userId={user.id} />}
           </div>
-          <div className="flex h-5 items-center space-x-2.5">
-            <TimeAgo date={comment.createdAt} />
-          </div>
-        </div>
+        </header>
+        <footer className="flex h-5 items-center space-x-2.5">
+          <TimeAgo date={comment.createdAt} />
+        </footer>
       </div>
-      <CommentActions comment={comment} userId={user.id} />
-    </div>
+    </article>
   )
 }
 
