@@ -18,7 +18,7 @@ export default function Layout({
         <header className="flex w-full justify-center">
           <SearchBook className="lg:3/4 md:w-2/3" />
         </header>
-        <main className="mx-auto flex max-w-sm flex-col justify-center gap-12 px-4 pb-16 sm:max-w-lg md:pb-4">
+        <main className="mx-auto flex max-w-sm flex-col justify-center gap-12 pb-16 sm:max-w-lg md:pb-4">
           {children}
           {modal}
         </main>

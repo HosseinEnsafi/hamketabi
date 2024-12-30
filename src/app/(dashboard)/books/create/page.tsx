@@ -1,4 +1,6 @@
+import CreateBookForm from "@/components/CreateBookForm"
+
 const CreateBookPage = () => {
-  return <div>CreateBookPage</div>
+  return <CreateBookForm />
 }
 export default CreateBookPage

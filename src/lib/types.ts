@@ -1,4 +1,4 @@
-import type { Comment, Like, Post, Quote, Saved, User } from "@prisma/client"
+import type { AuthorRole, Comment, Like, Post, Quote, Saved, User } from "@prisma/client"
 export type ActionResponse =
   | { error: string; success?: undefined }
   | { success: string; error?: undefined }

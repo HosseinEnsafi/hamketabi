@@ -12,7 +12,7 @@ export const createPost = async (values: z.infer<typeof CreatePostSchema>) => {
   try {
     const { body, image, title } = validateWithZodSchema(CreatePostSchema, values)
     const userId = await getUserId()
-    await db.post.create({
+    const { id } = await db.post.create({
       data: {
         title,
         image,
@@ -21,7 +21,7 @@ export const createPost = async (values: z.infer<typeof CreatePostSchema>) => {
       },
     })
 
-    redirect("/feeds")
+    redirect(`/posts/${id}`)
   } catch (error) {
     return renderError(error)
   }

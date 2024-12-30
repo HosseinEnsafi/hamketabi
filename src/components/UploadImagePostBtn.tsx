@@ -6,10 +6,7 @@ type UploadImagePostBtnProps = {
   onUploadError?: (error: Error) => void
 }
 
-const UploadImagePostBtn = ({
-  onUploadCompleted,
-  onUploadError,
-}: UploadImagePostBtnProps) => {
+const UploadImagePostBtn = ({ onUploadCompleted, onUploadError }: UploadImagePostBtnProps) => {
   return (
     <UploadButton
       appearance={{
@@ -18,12 +15,12 @@ const UploadImagePostBtn = ({
       content={{
         allowedContent: "حداکثر 4 مگابایت",
         button({ ready, isUploading, uploadProgress }) {
-          if (isUploading) return `${uploadProgress}%`
+          if (isUploading) return `${uploadProgress > 100 ? 100 : uploadProgress}%`
           if (ready && !isUploading) return "انتخاب عکس"
         },
       }}
       config={{ cn: twMerge }}
-      endpoint={"imageUploader"}
+      endpoint={"postImage"}
       onClientUploadComplete={(res) => onUploadCompleted?.(res[0].url)}
       onUploadError={(error: Error) => onUploadError?.(error)}
     />
