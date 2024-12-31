@@ -112,7 +112,6 @@ const CommentSchema = z.object({
   commentAbleType: z.nativeEnum(CommentAbleType),
   body: z.string({ message: requiredMessage("کامنت") }),
 })
-
 export const CreateCommentSchema = CommentSchema.omit({ id: true })
 export const DeleteCommentSchema = CommentSchema.pick({ id: true })
 export const LikeCommentSchema = CommentSchema.pick({ id: true })
@@ -123,7 +122,6 @@ export const CategorySchema = z.object({
     .string({ message: requiredMessage("نام دسته بندی") })
     .min(1, { message: emptyMessage("نام دسته بندی") }),
 })
-
 export const CreateCategorySchema = CategorySchema.omit({ id: true })
 
 export const AuthorSchema = z.object({
@@ -141,25 +139,47 @@ export const PublisherSchema = z.object({
 })
 export const CreatePublisherSchema = PublisherSchema.omit({ id: true })
 
-// prettier-ignore
 export const BookSchema = z.object({
-  id: IdSchema, 
-  title: z.string().min(1, {message:requiredMessage("عنوان")}), 
-  isbn: z.string().min(1,{message:requiredMessage("شابک")}).regex(/^\d{13}$/, "فرمت شابک صحیح نیست"), 
+  id: IdSchema,
+  title: z.string().min(1, { message: requiredMessage("عنوان") }),
+  isbn: z
+    .string()
+    .min(1, { message: requiredMessage("شابک") })
+    .regex(/^\d{13}$/, "فرمت شابک صحیح نیست"),
   numOfPages: z
-  .string()
-  .min(1, { message:requiredMessage("تعداد صفحات")}) 
-  .refine((value) => Number(value) > 0 && Number.isInteger(Number(value)), {
-    message: "تعداد صفحات باید عددی مثبت باشد",
-  }),
-  cover: z.string().url("فرمت عکس صحیح نیست"), 
+    .string()
+    .min(1, { message: requiredMessage("تعداد صفحات") })
+    .refine((value) => Number(value) > 0 && Number.isInteger(Number(value)), {
+      message: "تعداد صفحات باید عددی مثبت باشد",
+    }),
+  cover: z.string().url("فرمت عکس صحیح نیست"),
   category: CategorySchema,
   authors: z.array(AuthorSchema).optional(),
   publishers: z.array(PublisherSchema).optional(),
-});
-
+})
 export const CreateBookSchema = BookSchema.extend({
   category: CreateCategorySchema,
   authors: z.array(CreateAuthorSchema),
   publishers: z.array(CreatePublisherSchema),
 }).omit({ id: true })
+
+// REVIEW SCHEMA
+export const ReviewSchema = z.object({
+  id: IdSchema,
+  bookId: IdSchema,
+  body: z.string(),
+  rating: z
+    .string()
+    .min(1, { message: requiredMessage("امتیاز") })
+    .refine(
+      (value) => {
+        const number = Number(value)
+        return Number.isInteger(number) && number >= 1 && number <= 5
+      },
+      {
+        message: "امتیاز باید عددی بین ۱ تا ۵ باشد",
+      },
+    ),
+})
+
+export const CreateReview = ReviewSchema.omit({ id: true })

@@ -1,4 +1,19 @@
-import type { AuthorRole, Comment, Like, Post, Quote, Saved, User } from "@prisma/client"
+import type {
+  Author,
+  Book,
+  BookAuthor,
+  BookList,
+  BookPublisher,
+  Category,
+  Comment,
+  Like,
+  Post,
+  Publisher,
+  Quote,
+  Review,
+  Saved,
+  User,
+} from "@prisma/client"
 export type ActionResponse =
   | { error: string; success?: undefined }
   | { success: string; error?: undefined }
@@ -39,6 +54,21 @@ export type PostWithExtras = Post & {
   savedBy: SavedWithExtras[]
 }
 
+export type ReviewWithExtras = Review & {
+  user: UserInfo
+  book: Book
+}
+
+export type BookWithExtras = Book & {
+  // likes: LikeWithExtras[]
+  // savedBy: SavedWithExtras[]
+  authors: (BookAuthor & { author: Author })[]
+  publishers: (BookPublisher & { publisher: Publisher })[]
+  reviews: ReviewWithExtras[]
+  category: Category
+  bookList: BookList[]
+}
+
 export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
 /*   | BooklistFeedItem
   | QuoteFeedItem
@@ -57,4 +87,9 @@ export type UserWithExtras = SafeUser & {
   saved: Saved[]
   /*   followedBy: FollowerWithExtras[]
   following: FollowingWithExtras[] */
+}
+
+export type OptimisticReview = {
+  userId: string
+  rating: number
 }

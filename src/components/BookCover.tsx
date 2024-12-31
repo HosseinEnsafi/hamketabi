@@ -10,8 +10,8 @@ interface BookCoverProps extends Omit<NextImageProps, "src"> {
 
 const BookCover = ({ className, src, alt, ...props }: BookCoverProps) => {
   return (
-    <div className="relative h-72 w-48 overflow-hidden rounded-md">
-      <Image src={src} alt={alt} fill className={cn("object-cover", className)} {...props} />
+    <div className={cn("relative h-72 w-48 overflow-hidden rounded-md", className)}>
+      <Image src={src} alt={alt} fill className={cn("object-cover")} {...props} />
     </div>
   )
 }

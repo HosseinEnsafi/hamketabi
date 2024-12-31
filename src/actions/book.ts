@@ -36,20 +36,27 @@ export const createBook = async (values: z.infer<typeof CreateBookSchema>) => {
         authors: {
           create: authors.map((author) => ({
             author: {
-              create: { name: author.name, role: author.role },
+              connectOrCreate: {
+                where: { name: author.name },
+                create: { ...author },
+              },
             },
           })),
         },
         publishers: {
           create: publishers.map((publisher) => ({
             publisher: {
-              create: { name: publisher.name },
+              connectOrCreate: {
+                where: { name: publisher.name },
+                create: { name: publisher.name },
+              },
             },
             publishedAt: publisher.publishedAt,
           })),
         },
       },
     })
+
     redirect(`/books/${id}`)
   } catch (error) {
     return renderError(error)

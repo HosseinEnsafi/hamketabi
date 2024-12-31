@@ -1,10 +1,7 @@
 import { db } from "@/lib/db"
-import { getUserId } from "@/data/auth"
 import { PostFeedItem, PostWithExtras } from "@/lib/types"
 
 export const fetchFeedsPosts = async (): Promise<PostFeedItem[]> => {
-  const userId = await getUserId()
-
   const posts = await db.post.findMany({
     include: {
       _count: { select: { comments: true } },
