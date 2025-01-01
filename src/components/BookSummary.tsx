@@ -5,25 +5,26 @@ interface Props {
   numbOfPages: number
   authors: (BookAuthor & { author: Author })[]
   publishers: (BookPublisher & { publisher: Publisher })[]
+  isbn: string
   className?: string
 }
 
 const BookSummary = (props: Props) => {
-  const { numbOfPages, authors, publishers, className } = props
+  const { numbOfPages, authors, publishers, isbn, className } = props
 
   return (
     <ul
       className={cn(
-        "flex h-0 w-full list-none items-center justify-between divide-x-2 py-4 rtl:divide-x-reverse",
+        "flex w-full list-none flex-col items-center justify-between space-y-4 py-4 sm:flex-row sm:space-y-0 sm:divide-x-2 sm:divide-y-0 rtl:sm:divide-x-reverse",
         className,
       )}
     >
-      <li className="flex flex-1 flex-col items-center justify-center px-4">
+      <li className="flex flex-1 flex-col items-center justify-center gap-0.5 px-4">
         <span className="text-sm">تعداد صفحات</span>
         <span className="">{numbOfPages}</span>
       </li>
 
-      <li className="flex flex-1 flex-col items-center justify-center px-4">
+      <li className="flex flex-1 flex-col items-center justify-center gap-0.5 px-4">
         <span className="text-sm">پدیدآورنده</span>
         <div className="flex flex-wrap justify-center gap-1">
           {authors.map(({ author }) => (
@@ -34,7 +35,7 @@ const BookSummary = (props: Props) => {
         </div>
       </li>
 
-      <li className="flex flex-1 flex-col items-center justify-center px-4">
+      <li className="flex flex-1 flex-col items-center justify-center gap-0.5 px-4">
         <span className="text-sm">انتشارات</span>
         <div className="flex flex-wrap justify-center gap-1">
           {publishers.map(({ publisher }) => (
@@ -43,6 +44,11 @@ const BookSummary = (props: Props) => {
             </span>
           ))}
         </div>
+      </li>
+
+      <li className="flex flex-1 flex-col items-center justify-center gap-0.5 px-4 text-sm">
+        <span>شابک</span>
+        <span>{isbn}</span>
       </li>
     </ul>
   )

@@ -162,20 +162,22 @@ model BookPublisher {
   book        Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
   publisherId String
   publisher   Publisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
-  publishedAt DateTime // Date the book was published by the publisher
+  publishedAt DateTime
   createdAt   DateTime  @default(now())
 
   @@unique([bookId, publisherId])
 }
 
 model Review {
-  id     String @id @default(cuid())
-  body   String
-  rating Int
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bookId String
-  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  body      String?
+  rating    Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, bookId])
 }

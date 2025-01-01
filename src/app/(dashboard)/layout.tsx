@@ -2,13 +2,7 @@ import SearchBook from "@/components/SearchBook"
 import SideNav from "@/components/SideNav"
 import React from "react"
 
-export default function Layout({
-  children,
-  modal,
-}: {
-  children: React.ReactNode
-  modal: React.ReactNode
-}) {
+export default function Layout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <div className="flex flex-col md:flex-row">
       <aside className="fixed inset-y-0 z-50 h-screen flex-none md:sticky md:w-20 md:border-r lg:w-52">

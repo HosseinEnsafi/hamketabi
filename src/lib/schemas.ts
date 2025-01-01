@@ -1,5 +1,12 @@
 import z, { ZodSchema } from "zod"
-import { MAX_BODY_POST, MAX_TITLE_POST, MIN_BODY_POST, MIN_TITLE_POST } from "./constants"
+import {
+  MAX_BODY_POST,
+  MAX_BODY_REVIEW,
+  MAX_TITLE_POST,
+  MIN_BODY_POST,
+  MIN_BODY_REVIEW,
+  MIN_TITLE_POST,
+} from "./constants"
 import { AuthorRole, CommentAbleType, LikeableType, SaveableType } from "@prisma/client"
 const phoneRegex = /^09[0-9]{9}$/
 const isEnglishAlphabetRegex = /^[a-zA-Z]+$/
@@ -118,9 +125,7 @@ export const LikeCommentSchema = CommentSchema.pick({ id: true })
 
 export const CategorySchema = z.object({
   id: IdSchema,
-  name: z
-    .string({ message: requiredMessage("نام دسته بندی") })
-    .min(1, { message: emptyMessage("نام دسته بندی") }),
+  name: z.string({ message: requiredMessage("نام دسته بندی") }).min(1, { message: emptyMessage("نام دسته بندی") }),
 })
 export const CreateCategorySchema = CategorySchema.omit({ id: true })
 
@@ -167,7 +172,7 @@ export const CreateBookSchema = BookSchema.extend({
 export const ReviewSchema = z.object({
   id: IdSchema,
   bookId: IdSchema,
-  body: z.string(),
+  body: z.string().optional(),
   rating: z
     .string()
     .min(1, { message: requiredMessage("امتیاز") })
@@ -182,4 +187,11 @@ export const ReviewSchema = z.object({
     ),
 })
 
-export const CreateReview = ReviewSchema.omit({ id: true })
+export const CreateRatingSchema = ReviewSchema.omit({ id: true, body: true })
+export const CreateReviewSchema = ReviewSchema.omit({ id: true }).extend({
+  body: z
+    .string()
+    .min(1, { message: requiredMessage("امتیاز") })
+    .min(MIN_BODY_REVIEW, { message: minMessage("متن", MIN_BODY_REVIEW) })
+    .max(MAX_BODY_REVIEW, { message: maxMessage("متن", MAX_BODY_REVIEW) }),
+})

@@ -2,24 +2,25 @@
 import { useState, useTransition } from "react"
 import { cn } from "@/lib/utils"
 import { Star } from "lucide-react"
-import { BookWithExtras } from "@/lib/types"
-import { createReview } from "@/actions/review"
+import { BookWithExtras, ReviewWithExtras } from "@/lib/types"
+import { createRating } from "@/actions/review"
 import { toast } from "sonner"
 import { useOptimisticReviews } from "@/lib/hooks"
 import { Button } from "./ui/button"
 
 interface RateBookProps {
-  book: BookWithExtras
+  bookId: string
+  reviews: ReviewWithExtras[]
   userId: string
   className?: string
   onRate?: (rating: number) => void
 }
 
-const RateBook = ({ className, onRate, book, userId }: RateBookProps) => {
+const RateBook = ({ className, onRate, userId, reviews, bookId }: RateBookProps) => {
   const [isPending, startTransition] = useTransition()
   const [hoverRating, setHoverRating] = useState(0)
 
-  const { addOptimisticReviews, ratingNumber } = useOptimisticReviews(book.reviews, userId)
+  const { addOptimisticReviews, ratingNumber } = useOptimisticReviews(reviews, userId)
 
   const handleRate = async (index: number) => {
     if (isPending) return
@@ -28,7 +29,7 @@ const RateBook = ({ className, onRate, book, userId }: RateBookProps) => {
     startTransition(() => {
       addOptimisticReviews({ userId, rating: selectedRating })
 
-      createReview({ body: "", bookId: book.id, rating: String(selectedRating) }).then((res) => {
+      createRating({ bookId, rating: String(selectedRating) }).then((res) => {
         if (res && "error" in res) {
           toast.error(res.error)
           return

@@ -1,6 +1,6 @@
 import { CommentWithExtras } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import LikeComment from "./LikeComment"
+import LikeButton from "./LikeButton"
 
 interface CommentActionsProps {
   className?: string
@@ -13,7 +13,7 @@ const CommentActions = ({ userId, className, comment }: CommentActionsProps) => 
     <div className={cn(className)}>
       <div className="flex flex-row-reverse items-center justify-between px-3">
         <div className="flex flex-row-reverse items-center gap-2">
-          <LikeComment commentId={comment.id} likes={comment.likes} userId={userId} />
+          <LikeButton likeableId={comment.id} likes={comment.likes} userId={userId} />
         </div>
       </div>
     </div>

@@ -39,9 +39,7 @@ const SinglePost = async ({ post }: SinglePostProps) => {
           </div>
         </div>
 
-        <Button className="bg-blue-600 p-0.5 px-6 text-xs text-white hover:bg-blue-600/80">
-          دنبال کردن
-        </Button>
+        <Button className="bg-blue-600 p-0.5 px-6 text-xs text-white hover:bg-blue-600/80">دنبال کردن</Button>
       </div>
 
       <h2 className="!mt-6">{post.title}</h2>

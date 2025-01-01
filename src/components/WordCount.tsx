@@ -4,12 +4,11 @@ interface WordCountProps {
   currentLength: number
   minLength: number
   maxLength: number
-  isDirty: boolean
+  isDirty?: boolean
 }
 
-const WordCount = ({ currentLength, minLength, maxLength, isDirty }: WordCountProps) => {
+const WordCount = ({ currentLength, minLength, maxLength, isDirty = false }: WordCountProps) => {
   const isInvalid = (currentLength < minLength || currentLength > maxLength) && isDirty
-
   return (
     <span className={cn("text-sm", isInvalid && "text-destructive")}>
       {currentLength}/{maxLength}
