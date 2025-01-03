@@ -6,6 +6,7 @@ import type {
   BookPublisher,
   Category,
   Comment,
+  Follows,
   Like,
   Post,
   Publisher,
@@ -14,9 +15,7 @@ import type {
   Saved,
   User,
 } from "@prisma/client"
-export type ActionResponse =
-  | { error: string; success?: undefined }
-  | { success: string; error?: undefined }
+export type ActionResponse = { error: string; success?: undefined } | { success: string; error?: undefined }
 
 export type FeedType = "POST" | "BOOKLIST" | "QUOTE" | "REVIEW"
 
@@ -38,6 +37,13 @@ export type PostFeedItem = FeedItem &
     type: Extract<FeedType, "POST">
   }
 
+export type ReviewFeedItem = FeedItem &
+  Omit<Review, "body"> & {
+    type: Extract<FeedType, "REVIEW">
+    book: BookPreview
+    body: string
+  }
+
 export type QuoteFeedItem = FeedItem &
   Quote & {
     type: Extract<FeedType, "QUOTE">
@@ -48,7 +54,7 @@ export type LikeWithExtras = Like & { user: UserInfo }
 export type SavedWithExtras = Saved & { user: UserInfo }
 
 export type PostWithExtras = Post & {
-  user: SafeUser
+  user: UserInfo
   comments: CommentWithExtras[]
   likes: LikeWithExtras[]
   savedBy: SavedWithExtras[]
@@ -57,6 +63,13 @@ export type PostWithExtras = Post & {
 export type ReviewWithExtras = Review & {
   user: UserInfo
   book: Book
+  likes: LikeWithExtras[]
+  comments: CommentWithExtras[]
+  savedBy: SavedWithExtras[]
+}
+
+export type SingleReviewWithExtras = ReviewWithExtras & {
+  book: BookPreview
 }
 
 export type BookWithExtras = Book & {
@@ -69,7 +82,14 @@ export type BookWithExtras = Book & {
   bookList: BookList[]
 }
 
-export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
+export type BookPreview = Book & {
+  authors: (BookAuthor & { author: Author })[]
+  publishers: (BookPublisher & { publisher: Publisher })[]
+  category: Category
+  reviews: Review[]
+}
+
+export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem | ReviewFeedItem
 /*   | BooklistFeedItem
   | QuoteFeedItem
   | ReviewFeedItem */
@@ -78,15 +98,21 @@ export type UnifiedFeedItem = PostFeedItem | QuoteFeedItem
   following: Follows[]
   followedBy: Follows[]
 } */
-/* 
+/*
+ */
+
+export type UserWithFollows = User & {
+  followedBy: Follows[]
+}
+
 export type FollowerWithExtras = Follows & { follower: UserWithFollows }
 export type FollowingWithExtras = Follows & { following: UserWithFollows }
- */
+
 export type UserWithExtras = SafeUser & {
+  followedBy: FollowerWithExtras[]
+  following: FollowingWithExtras[]
   posts: Post[]
   saved: Saved[]
-  /*   followedBy: FollowerWithExtras[]
-  following: FollowingWithExtras[] */
 }
 
 export type OptimisticReview = {

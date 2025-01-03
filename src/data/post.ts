@@ -5,13 +5,7 @@ export const fetchFeedsPosts = async (): Promise<PostFeedItem[]> => {
   const posts = await db.post.findMany({
     include: {
       _count: { select: { comments: true } },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
-        },
-      },
+      user: { select: { id: true, name: true, image: true } },
       likes: true,
       savedBy: true,
     },
@@ -29,38 +23,10 @@ export const fetchPostById = async (postId: string): Promise<PostWithExtras | nu
     const post = await db.post.findUnique({
       where: { id: postId },
       include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-            createdAt: true,
-            updatedAt: true,
-            phoneNumber: true,
-            phoneVerified: true,
-            role: true,
-          },
-        },
-        likes: {
-          where: { postId },
-          include: {
-            user: { select: { ...selectSafeUser } },
-          },
-        },
-        savedBy: {
-          where: { postId },
-          include: {
-            user: { select: { ...selectSafeUser } },
-          },
-        },
-        comments: {
-          where: { postId },
-          include: {
-            user: { select: { ...selectSafeUser } },
-            likes: true,
-          },
-        },
+        user: { select: { id: true, name: true, image: true } },
+        likes: { include: { user: { select: { ...selectSafeUser } } } },
+        savedBy: { include: { user: { select: { ...selectSafeUser } } } },
+        comments: { include: { user: { select: { ...selectSafeUser } }, likes: true } },
       },
     })
 
@@ -68,4 +34,21 @@ export const fetchPostById = async (postId: string): Promise<PostWithExtras | nu
   } catch (error) {
     return null
   }
+}
+
+export const fetchPostsByUsername = async (username: string, postId?: string): Promise<PostFeedItem[]> => {
+  const posts = await db.post.findMany({
+    where: { user: { name: username }, NOT: { id: postId } },
+    include: {
+      _count: { select: { comments: true } },
+      user: { select: { id: true, name: true, image: true } },
+      likes: true,
+      savedBy: true,
+    },
+  })
+
+  return posts.map(({ ...post }) => ({
+    ...post,
+    type: "POST",
+  }))
 }

@@ -14,6 +14,7 @@ export const createLike = async (values: z.infer<typeof ToggleLikeSchema>) => {
     QUOTE: (likeableId) => [`/feeds`, `/quotes/${likeableId}`],
     BOOKLIST: (likeableId) => [`/feeds`, `/booklists/${likeableId}`],
     COMMENT: (likeableId) => [`/posts`],
+    REVIEW: (likeableId) => [`/feeds`, `/reviews/${likeableId}`],
   }
 
   const fieldMap: Record<LikeableType, string> = {
@@ -21,6 +22,7 @@ export const createLike = async (values: z.infer<typeof ToggleLikeSchema>) => {
     QUOTE: "quoteId",
     BOOKLIST: "bookListId",
     COMMENT: "commentId",
+    REVIEW: "reviewId",
   }
 
   let pathsToRevalidate: string[] = []

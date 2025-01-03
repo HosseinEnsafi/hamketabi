@@ -10,12 +10,8 @@ interface CommentActionsProps {
 
 const CommentActions = ({ userId, className, comment }: CommentActionsProps) => {
   return (
-    <div className={cn(className)}>
-      <div className="flex flex-row-reverse items-center justify-between px-3">
-        <div className="flex flex-row-reverse items-center gap-2">
-          <LikeButton likeableId={comment.id} likes={comment.likes} userId={userId} />
-        </div>
-      </div>
+    <div className={cn("flex flex-row-reverse items-center gap-2", className)}>
+      <LikeButton likeableType="COMMENT" likeableId={comment.id} likes={comment.likes} userId={userId} />
     </div>
   )
 }

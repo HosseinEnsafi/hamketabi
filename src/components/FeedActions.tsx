@@ -1,8 +1,8 @@
 import { FeedType, UnifiedFeedItem } from "@/lib/types"
-import LikeButton from "./LikeFeed"
+import LikeButton from "./LikeButton"
 import CommentButton from "./CommentButton"
 import ShareFeedItemButton from "./ShareFeedItemButton"
-import BookMarkButton from "./BookmarkFeed"
+import BookMarkButton from "./BookmarkButton"
 import { CommentAbleType, LikeableType } from "@prisma/client"
 
 interface FeedActionsProps {

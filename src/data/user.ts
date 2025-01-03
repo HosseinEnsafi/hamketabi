@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { UserWithExtras } from "@/lib/types"
 
 export const getUserByEmail = async (email: string) => {
   try {
@@ -48,4 +49,46 @@ export const getUserById = async (id: string) => {
   } catch {
     return null
   }
+}
+
+export async function fetchProfile(username: string): Promise<UserWithExtras | null> {
+  const data = await db.user.findFirst({
+    where: {
+      name: username,
+    },
+    include: {
+      posts: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+      saved: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+      followedBy: {
+        include: {
+          follower: {
+            include: {
+              following: true,
+              followedBy: true,
+            },
+          },
+        },
+      },
+      following: {
+        include: {
+          following: {
+            include: {
+              following: true,
+              followedBy: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return data
 }

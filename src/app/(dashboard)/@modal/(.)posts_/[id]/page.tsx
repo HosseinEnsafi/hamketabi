@@ -1,20 +1,21 @@
-import PostView from "@/components/PostView"
-import { fetchPostById } from "@/data/post"
+// import PostView from "@/components/PostView"
+// import { fetchPostById } from "@/data/post"
 import { notFound } from "next/navigation"
-
+import React from "react"
 interface PostModalProps {
   params: Promise<{ id: string }>
 }
 
 const PostModal = async ({ params }: PostModalProps) => {
   const id = (await params).id
-  const post = await fetchPostById(id)
+  // const post = await fetchPostById(id)
 
-  if (!post) notFound()
+  // if (!post) notFound()
 
   return (
     <>
-      <PostView post={post} />
+      {null}
+      {/* <PostView post={post} /> */}
     </>
   )
 }

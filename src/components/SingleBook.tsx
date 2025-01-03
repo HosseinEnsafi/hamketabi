@@ -4,18 +4,15 @@ import BookCover from "./BookCover"
 import BookSummary from "./BookSummary"
 import BookReviewPreview from "./BookReviewPreview"
 import RateBook from "./RateBook"
-import { getUserId } from "@/data/auth"
 import BookActions from "./BookActions"
-
 import Review from "./Review"
 
 interface Props {
   book: BookWithExtras
+  userId: string
 }
-const SingleBook = async ({ book }: Props) => {
-  const userId = await getUserId()
+const SingleBook = async ({ book, userId }: Props) => {
   const predicate = (review: ReviewWithExtras) => review.userId === userId
-
   const review = book.reviews.find(predicate)
   const hasReview = Boolean(review && review.body)
 
@@ -47,7 +44,7 @@ const SingleBook = async ({ book }: Props) => {
           {book.reviews
             .filter((review) => review.body)
             .map((review) => (
-              <Review key={review.id} review={review} />
+              <Review userId={userId} key={review.id} review={review} />
             ))}
         </ul>
       )}

@@ -69,6 +69,8 @@ export const VerifyResetSchema = UserSchema.pick({
   password: true,
 })
 
+export const FollowUserSchema = UserSchema.pick({ id: true })
+
 export const PhoneNumberSchema = UserSchema.shape.phoneNumber
 export const PasswordSchema = UserSchema.shape.password
 

@@ -1,8 +1,8 @@
-import { ReviewWithExtras } from "@/lib/types"
+import { Review } from "@prisma/client"
 import { NotebookPen } from "lucide-react"
 
 interface Props {
-  reviews: ReviewWithExtras[]
+  reviews: Review[]
   icon?: boolean
 }
 

@@ -21,7 +21,27 @@ export const fetchBookById = async (id: string): Promise<BookWithExtras | null> 
         reviews: {
           include: {
             user: { select: { ...selectSafeUser } },
-            book: true,
+            book: {
+              include: {
+                authors: true,
+              },
+            },
+            likes: {
+              include: {
+                user: { select: { ...selectSafeUser } },
+              },
+            },
+            comments: {
+              include: {
+                user: { select: { ...selectSafeUser } },
+                likes: true,
+              },
+            },
+            savedBy: {
+              include: {
+                user: { select: { ...selectSafeUser } },
+              },
+            },
           },
         },
         category: true,

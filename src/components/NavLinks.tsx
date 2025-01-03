@@ -7,13 +7,12 @@ import Link from "next/link"
 
 const links = [
   { name: "صفحه اصلی", href: "/feeds", icon: HomeIcon },
-  { name: "گشت و گذار", href: "/explore", icon: Compass },
-  {
+  /*   {
     name: "نشان شده ها",
     href: "/profile/saved",
     hideOnMobile: true,
     icon: BookmarkIcon,
-  },
+  }, */
 ]
 const NavLinks = () => {
   const pathname = usePathname()
@@ -32,7 +31,7 @@ const NavLinks = () => {
             className={cn(
               "w-full space-x-2 px-5 sm:px-4 md:justify-center lg:justify-start [&_svg]:size-5",
               {
-                "hidden justify-start md:flex": link.hideOnMobile,
+                // "hidden justify-start md:flex": link.hideOnMobile,
               },
               { "font-semibold text-primary": isActive },
             )}

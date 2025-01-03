@@ -1,8 +1,8 @@
-import { ReviewWithExtras } from "@/lib/types"
+import { Review } from "@prisma/client"
 import { StarIcon } from "lucide-react"
 
 interface Props {
-  reviews: ReviewWithExtras[]
+  reviews: Review[]
   showReviewers?: boolean
 }
 const RatingLabel = ({ reviews, showReviewers = false }: Props) => {

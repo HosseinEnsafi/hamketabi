@@ -4,20 +4,25 @@ import { getUserId } from "@/data/auth"
 import { db } from "@/lib/db"
 import { ToggleSavedSchema, validateWithZodSchema } from "@/lib/schemas"
 import { renderError } from "@/lib/utils"
+import { SaveableType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
 export const toggleSaved = async (values: z.infer<typeof ToggleSavedSchema>) => {
-  const pathMap: Record<string, (saveableId: string) => string[]> = {
+  const pathMap: Record<SaveableType, (saveableId: string) => string[]> = {
     POST: (saveableId) => [`/feeds`, `/posts/${saveableId}`],
     QUOTE: (saveableId) => [`/feeds`, `/quotes/${saveableId}`],
     BOOKLIST: (saveableId) => [`/feeds`, `/booklists/${saveableId}`],
+    REVIEW: (saveableId) => [`/feeds`, `/reviews/${saveableId}`],
+    BOOK: (saveableId) => [`/feeds`, `/books/${saveableId}`],
   }
 
-  const fieldMap: Record<string, string> = {
+  const fieldMap: Record<SaveableType, string> = {
     POST: "postId",
     QUOTE: "quoteId",
     BOOKLIST: "bookListId",
+    REVIEW: "reviewId",
+    BOOK: "bookId",
   }
 
   let pathsToRevalidate: string[] = []

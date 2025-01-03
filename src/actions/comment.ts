@@ -13,12 +13,14 @@ export const createComment = async (values: z.infer<typeof CreateCommentSchema>)
     POST: (commentAbleId) => `/posts/${commentAbleId}`,
     QUOTE: (commentAbleId) => `/quotes/${commentAbleId}`,
     BOOKLIST: (commentAbleId) => `/booklists/${commentAbleId}`,
+    REVIEW: (commentAbleId) => `/reviews/${commentAbleId}`,
   }
 
   const fieldMap: Record<CommentAbleType, string> = {
     POST: "postId",
     QUOTE: "quoteId",
     BOOKLIST: "bookListId",
+    REVIEW: "reviewId",
   }
 
   try {
@@ -47,7 +49,7 @@ export const createComment = async (values: z.infer<typeof CreateCommentSchema>)
   } catch (error) {
     return renderError(error)
   } finally {
-    if (!CreateCommentSchema.safeParse(values)) return { error: "مقادیر نامعتبر" }
+    if (!CreateCommentSchema.safeParse(values).success) return { error: "مقادیر نامعتبر" }
     const pathToRevalidate = pathMap[values.commentAbleType](values.commentAbleId)
     revalidatePath(pathToRevalidate)
   }

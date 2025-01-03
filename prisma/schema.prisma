@@ -26,6 +26,8 @@ model User {
   reviews       Review[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  followedBy    Follows[]  @relation("following")
+  following     Follows[]  @relation("follower")
 }
 
 model Account {
@@ -169,15 +171,18 @@ model BookPublisher {
 }
 
 model Review {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   body      String?
   rating    Int
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookId    String
-  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  book      Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  savedBy   Saved[]
+  likes     Like[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([userId, bookId])
 }
@@ -195,6 +200,8 @@ model Like {
   quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   bookListId   String?
   bookList     BookList?    @relation(fields: [bookListId], references: [id], onDelete: Cascade)
+  reviewId     String?
+  review       Review?      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
@@ -220,6 +227,8 @@ model Comment {
   user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookListId      String?
   bookList        BookList?       @relation(fields: [bookListId], references: [id])
+  reviewId        String?
+  review          Review?         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   likes           Like[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -243,6 +252,8 @@ model Saved {
   book         Book?        @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookListId   String?
   bookList     BookList?    @relation(fields: [bookListId], references: [id], onDelete: Cascade)
+  reviewId     String?
+  review       Review?      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
@@ -250,7 +261,19 @@ model Saved {
   @@unique([userId, quoteId])
   @@unique([userId, bookId])
   @@unique([userId, bookListId])
+  @@unique([userId, reviewId])
   @@index([userId])
+}
+
+model Follows {
+  follower    User   @relation("follower", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("following", fields: [followingId], references: [id])
+  followingId String
+
+  @@id([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 enum UserRole {
@@ -263,6 +286,7 @@ enum LikeableType {
   COMMENT
   QUOTE
   BOOKLIST
+  REVIEW
 }
 
 enum SaveableType {
@@ -270,12 +294,14 @@ enum SaveableType {
   QUOTE
   BOOK
   BOOKLIST
+  REVIEW
 }
 
 enum CommentAbleType {
   POST
   QUOTE
   BOOKLIST
+  REVIEW
 }
 
 enum AuthorRole {

@@ -4,14 +4,23 @@ import { Button } from "./ui/button"
 import { createComment } from "@/actions/comment"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { CommentAbleType } from "@prisma/client"
 
-const CommentForm = ({ commentAbleId, className }: { commentAbleId: string; className?: string }) => {
+const CommentForm = ({
+  commentAbleId,
+  className,
+  commentAbleType = "POST",
+}: {
+  commentAbleId: string
+  commentAbleType: CommentAbleType
+  className?: string
+}) => {
   return (
     <div className={cn("rounded bg-muted p-2", className)}>
       <form
         action={async (formData) => {
           const body = formData.get("body")!.toString()
-          const res = await createComment({ body, commentAbleId, commentAbleType: "POST" })
+          const res = await createComment({ body, commentAbleId, commentAbleType })
           if (res && "error" in res) toast.error(res.error)
         }}
       >

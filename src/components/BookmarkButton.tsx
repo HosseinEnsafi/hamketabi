@@ -5,6 +5,7 @@ import type { SaveableType, Saved } from "@prisma/client"
 import { Button } from "./ui/button"
 import { useOptimisticSaved } from "@/lib/hooks"
 import { toggleSaved } from "@/actions/saved"
+import { toast } from "sonner"
 
 interface BookMarkButtonProps {
   saveableId: string
@@ -20,7 +21,8 @@ const BookMarkButton = ({ saveableId, saveableType, savedBy, userId }: BookMarkB
       <form
         action={async () => {
           toggleOptimisticSaved({ userId })
-          await toggleSaved({ saveableId, saveableType })
+          const res = await toggleSaved({ saveableId, saveableType })
+          if (res && "error" in res) toast.error(res.error)
         }}
       >
         <Button

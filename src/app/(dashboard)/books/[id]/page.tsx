@@ -1,4 +1,5 @@
 import SingleBook from "@/components/SingleBook"
+import { getUserId } from "@/data/auth"
 import { fetchBookById } from "@/data/book"
 import { notFound } from "next/navigation"
 
@@ -11,6 +12,8 @@ const BookDetailPage = async ({ params }: BookDetailPageProps) => {
   const book = await fetchBookById(id)
   if (!book) notFound()
 
-  return <SingleBook book={book} />
+  const userId = await getUserId()
+
+  return <SingleBook userId={userId} book={book} />
 }
 export default BookDetailPage

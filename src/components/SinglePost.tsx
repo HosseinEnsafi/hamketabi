@@ -56,9 +56,9 @@ const SinglePost = async ({ post }: SinglePostProps) => {
 
       <p className="!mt-2">{post.body}</p>
 
-      <SingleFeedActions type="POST" feed={post} userId={post.user.id} />
+      <SingleFeedActions type="POST" feed={post} userId={session.user.id!} />
 
-      <CommentForm className="!mt-8" commentAbleId={post.id} />
+      <CommentForm commentAbleType="POST" className="!mt-8" commentAbleId={post.id} />
 
       <hr className="!mt-2" />
 

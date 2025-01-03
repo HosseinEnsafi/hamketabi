@@ -1,13 +1,13 @@
 "use client"
-import { BookWithExtras } from "@/lib/types"
 import BookCover from "./BookCover"
 import BookAuthors from "./BookAuthors"
 import ReviewLabel from "./ReviewLabel"
 import RatingLabel from "./RatingLabel"
 import Link from "next/link"
+import { BookPreview as BookPreviewType } from "@/lib/types"
 
 interface BookPreviewProps {
-  book: BookWithExtras
+  book: BookPreviewType
 }
 
 const BookPreview = ({ book }: BookPreviewProps) => {
@@ -30,4 +30,5 @@ const BookPreview = ({ book }: BookPreviewProps) => {
     </div>
   )
 }
+
 export default BookPreview

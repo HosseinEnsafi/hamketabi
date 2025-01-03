@@ -1,4 +1,3 @@
-import { auth } from "@/auth"
 import { PostFeedItem } from "@/lib/types"
 import FeedOptions from "./FeedOptions"
 import Image from "next/image"
@@ -6,19 +5,14 @@ import FeedActions from "./FeedActions"
 import Link from "next/link"
 import FeedHeader from "./FeedHeader"
 
-const Post = async ({ post }: { post: PostFeedItem }) => {
-  const session = await auth()
-  const userId = session?.user.id
-
-  if (!userId) return null
-
+const Post = async ({ post, userId }: { post: PostFeedItem; userId: string }) => {
   return (
     <article className="flex w-full flex-col space-y-4 rounded bg-card px-3 py-4 shadow-md">
-      <div className="flex items-center justify-between sm:px-0">
+      <div className="flex items-center justify-between">
         <FeedHeader
           date={post.createdAt}
           description="پست منتشر کرد"
-          user={session.user}
+          user={post.user}
           timeFormat="relative"
           // TODO fix User schema in prisma to have name always in both oath and credentials
           username={post.user.name || "ناشناس"}

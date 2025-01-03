@@ -12,7 +12,7 @@ interface CommentButtonProps {
 const CommentButton = ({ feedId, feedType, commentsCount }: CommentButtonProps) => {
   return (
     <div>
-      <Link href={`${feedType.toLowerCase()}s/${feedId}`}>
+      <Link href={`/${feedType.toLowerCase()}s/${feedId}`}>
         <button type="submit" className="outline-action-btn">
           <MessageCircleIcon />
           <span className="text-sm leading-[0]" aria-label="تعداد کامنت">

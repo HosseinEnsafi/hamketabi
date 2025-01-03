@@ -1,17 +1,18 @@
 "use client"
 import { cn } from "@/lib/utils"
 import { HeartIcon } from "lucide-react"
-import type { Like } from "@prisma/client"
+import type { Like, LikeableType } from "@prisma/client"
+import { toast } from "sonner"
 import { useOptimisticLikes } from "@/lib/hooks"
 import { createLike } from "@/actions/like"
-
-interface LikeButtonProps {
+interface LikeFeedProps {
   likes: Like[]
   likeableId: string
+  likeableType: LikeableType
   userId: string
 }
 
-const LikeButton = ({ likeableId, likes, userId }: LikeButtonProps) => {
+const LikeFeed = ({ likeableId, userId, likes, likeableType }: LikeFeedProps) => {
   const { optimisticLikes, toggleOptimisticLike, hasLiked } = useOptimisticLikes(likes, userId)
 
   return (
@@ -19,7 +20,8 @@ const LikeButton = ({ likeableId, likes, userId }: LikeButtonProps) => {
       <form
         action={async () => {
           toggleOptimisticLike({ userId })
-          await createLike({ likeableId, likeableType: "COMMENT" })
+          const res = await createLike({ likeableId, likeableType })
+          if (res && "error" in res) toast.error(res.error)
         }}
       >
         <button type="submit" className="outline-action-btn">
@@ -36,4 +38,4 @@ const LikeButton = ({ likeableId, likes, userId }: LikeButtonProps) => {
     </div>
   )
 }
-export default LikeButton
+export default LikeFeed

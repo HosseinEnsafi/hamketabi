@@ -1,8 +1,8 @@
 "use client"
-import { CommentWithExtras } from "@/lib/types"
+import { BookPreview, ReviewWithExtras } from "@/lib/types"
 import { useState } from "react"
 import Modal from "./Modal"
-import { Edit2, MoreVertical, SendIcon } from "lucide-react"
+import { MoreVertical, SendIcon } from "lucide-react"
 import { Button } from "./ui/button"
 
 const TriggerOption = ({ onClick }: { onClick: () => void }) => (
@@ -12,11 +12,14 @@ const TriggerOption = ({ onClick }: { onClick: () => void }) => (
   />
 )
 
-const CommentOptions = ({ comment, userId }: { comment: CommentWithExtras; userId: string }) => {
-  const [open, setOpen] = useState(false)
-  const isMine = comment.user.id === userId
+interface BookOptionsProps {
+  book: BookPreview
+}
 
-  const modalTitle = "عملیات ممربوط به کامنت"
+const BookOptions = ({ book }: BookOptionsProps) => {
+  const [open, setOpen] = useState(false)
+
+  const modalTitle = "عملیات ممربوط به یادداشت"
   const modalDesc = "از بین گزینه های انتخاب کنید"
 
   return (
@@ -37,9 +40,9 @@ const CommentOptions = ({ comment, userId }: { comment: CommentWithExtras; userI
             variant="secondary"
             className="modal-item"
           >
-            ویرایش
-            <Edit2 />
-          </Button>{" "}
+            اشتراک گذاری
+            <SendIcon />
+          </Button>
           <Button
             onClick={() => {
               navigator.clipboard.writeText(`${window.location.origin}`)
@@ -56,4 +59,4 @@ const CommentOptions = ({ comment, userId }: { comment: CommentWithExtras; userI
     </>
   )
 }
-export default CommentOptions
+export default BookOptions

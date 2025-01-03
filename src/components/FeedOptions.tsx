@@ -46,16 +46,14 @@ const FeedOptions = ({ userId, feed }: FeedOptionsProps) => {
             <input type="hidden" name="feedId" value={feed.id} />
             <input type="hidden" name="type" value={feed.type} />
             <SubmitBtn Icon={Trash2} className="modal-item text-destructive" variant="secondary">
-              حذف پست
+              حذف
             </SubmitBtn>
           </form>
         )}
 
         <Button
           onClick={() => {
-            navigator.clipboard.writeText(
-              `${window.location.origin}/${feed.type.toLowerCase()}s/${feed.id}`,
-            )
+            navigator.clipboard.writeText(`${window.location.origin}/${feed.type.toLowerCase()}s/${feed.id}`)
             setOpen(false)
           }}
           variant="secondary"
